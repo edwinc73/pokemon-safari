@@ -12,9 +12,10 @@ function App() {
   const directionKeys = ["↑","←","↓","→"]
   const keyNames = ["ArrowUp","ArrowLeft", "ArrowDown", "ArrowRight"]
 
+  let playerDirection = "walk-down"
+
   const handleMovement = e => {
     const player = document.getElementById('player');
-    let playerDirection = ""
 
     switch (e.key) {
       case "ArrowUp":
@@ -29,13 +30,15 @@ function App() {
       case "ArrowRight":
         playerDirection = "walk-right"
         break;
+      default:
+        break;
     }
     setDirection(playerDirection)
-    player.classList.add('walking');
 
     if(keyNames.includes(e.key)){
       const keyName = e.key
       const key = document.querySelector(`#${keyName}`)
+      player.classList.add('walking');
       key.classList.add("animate-key");
       setTimeout(() => {
         key.classList.remove("animate-key");
