@@ -20,10 +20,12 @@ $font-display: 'Josefin Sans', sans-serif;
 
 .game-window{
   color: black;
-  background-color: white;
   width: 80vw;
   height: 70vh;
   border-radius: 120px;
   overflow: hidden;
-  margin: 15px
+  margin: 15px;
+  background-image: url("/game-map.png");
+  background-size: 4480px 2688px;
+  background-repeat: no-repeat;
 }
