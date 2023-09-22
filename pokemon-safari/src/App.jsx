@@ -5,47 +5,49 @@ import './App.scss'
 
 import Key from "../src/features/Key/Key"
 import Player from "../src/features/Player/Player"
-import { handleMovement } from './js/movement'
+import { handleMovement, mapCollisionCoord } from './js/movement'
 
 function App() {
-  console.log(handleMovement)
-  const [direction, setDirection] = React.useState({
+  const [direction, setDirection] = useState({
     direction: "walk-down",
     movementValue:{
       x: -610,
       y: -1150
-      // x: -52,
-      // y: -1150
+      // x: 510,
+      // y: 530
     }
   })
+
+  //set collision locations
+  const [collisionMap, setCollisionMap] = useState(mapCollisionCoord(collisions))
+
+  // movement logic
   useEffect(()=>{
     setDirection({
       direction: "walk-down",
       movementValue:{
-        x: parseFloat(document.querySelector(".game-window").style.left),
-        y: parseFloat(document.querySelector(".game-window").style.top)
+        x: parseFloat(document.querySelector(".game-window").style.left) || 0,
+        y: parseFloat(document.querySelector(".game-window").style.top) || 0
       }
     })
   }, [])
 
-  const backgroundSize = {
-    width: 1120 * 4,
-    height: 608 * 4
-  }
+  useEffect(()=>{
+        mapCollisionCoord(collisions, setCollisionMap)
 
-  const collisionMap = collisions
-
-
-  const directionKeys = ["↑","←","↓","→"]
-  const keyNames = ["ArrowUp","ArrowLeft", "ArrowDown", "ArrowRight"]
-
-  React.useEffect(()=>{
-    const handleMovementWithState = handleMovement(direction, setDirection, directionKeys);
+    const handleMovementWithState = handleMovement(direction, setDirection, directionKeys, collisionMap);
     document.addEventListener('keydown', handleMovementWithState);
     return () => {
       document.removeEventListener('keydown', handleMovementWithState);
     };
   }, [])
+
+  const directionKeys = ["↑","←","↓","→"]
+  const keyNames = ["ArrowUp","ArrowLeft", "ArrowDown", "ArrowRight"]
+  const backgroundSize = {
+    width: 1120 * 4,
+    height: 608 * 4
+  }
 
   const backgroundStyle ={
     top: `${direction.movementValue.y}px`,
