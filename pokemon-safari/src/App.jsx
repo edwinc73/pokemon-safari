@@ -7,33 +7,79 @@ import Key from "../src/features/Key/Key"
 import Player from "../src/features/Player/Player"
 
 function App() {
-  const [direction, setDirection] = React.useState("walk-down")
+
+  const backgroundSize = {
+    width: 1120 * 4,
+    height: 608 * 4
+  }
+
+  const collisionMap = collisions
+
+  console.log(collisionMap)
+  const [direction, setDirection] = React.useState({
+    direction: "walk-down",
+    movementValue:{
+      x: -585,
+      y: -1705
+    }
+  })
 
   const directionKeys = ["↑","←","↓","→"]
   const keyNames = ["ArrowUp","ArrowLeft", "ArrowDown", "ArrowRight"]
 
-  let playerDirection = "walk-down"
-
   const handleMovement = e => {
     const player = document.getElementById('player');
+    const squareValueWidth = 65.9
+    const squareValueheight = 67.5
 
     switch (e.key) {
       case "ArrowUp":
-        playerDirection = "walk-up"
+        setDirection(prevState => {
+          return({
+            direction: "walk-up",
+            movementValue:{
+              x: prevState.movementValue.x,
+              y: prevState.movementValue.y + squareValueheight
+            }
+          })
+        })
         break;
       case "ArrowDown":
-        playerDirection = "walk-down"
+        setDirection(prevState => {
+          return({
+            direction: "walk-down",
+            movementValue:{
+              x: prevState.movementValue.x,
+              y: prevState.movementValue.y - squareValueheight
+            }
+          })
+        })
         break;
       case "ArrowLeft":
-        playerDirection = "walk-left"
+        setDirection(prevState => {
+          return({
+            direction: "walk-left",
+            movementValue:{
+              y: prevState.movementValue.y,
+              x: prevState.movementValue.x + squareValueWidth
+            }
+          })
+        })
         break;
       case "ArrowRight":
-        playerDirection = "walk-right"
+        setDirection(prevState => {
+          return({
+            direction: "walk-right",
+            movementValue:{
+              y: prevState.movementValue.y,
+              x: prevState.movementValue.x - squareValueWidth
+            }
+          })
+        })
         break;
       default:
         break;
     }
-    setDirection(playerDirection)
 
     if(keyNames.includes(e.key)){
       const keyName = e.key
@@ -56,12 +102,17 @@ function App() {
     };
   }, [])
 
+  const backgroundStyle ={
+    backgroundPosition: `${direction.movementValue.x}px ${direction.movementValue.y}px`,
+    backgroundSize: `${backgroundSize.width}px ${backgroundSize.height}px`
+  }
+
   return (
     <>
       <div className="game d-flex">
-        <div className="game-window p-5">
+        <div className="game-window p-5" style={backgroundStyle}>
           <Player
-          direction = {direction}
+          direction = {direction.direction}
           />
         </div>
         <Key
