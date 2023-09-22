@@ -6,25 +6,47 @@ $font-color: #242424;
 $font-display: 'Josefin Sans', sans-serif;
 // $font-game: ;`
 
-.game{
+.background-color{
+  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239dade2' fill-opacity='0.11' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
   width: 100vw;
-  font-family: $font-display;
   height: 100vh;
   background-color: #5077f5;
-  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239dade2' fill-opacity='0.11' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
+  padding: 30px;
+}
+
+#game-backdrop{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.75;
+}
+
+.game{
+  width: 1200px;
+  font-family: $font-display;
+  height: 1200px;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   padding-bottom: 90px;
+  position: relative;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 30px;
 }
 
 .game-window{
+  top: 0;
+  left: 0;
   color: black;
-  width: 80vw;
-  height: 70vh;
-  border-radius: 120px;
   overflow: hidden;
   margin: 15px;
-  background-image: url("/game-map.png");
-  background-repeat: no-repeat;
+  position: absolute;
+}
+
+.game-window img{
+  border-radius: 20px;
+  box-shadow: 0px 0px 30px rgba($color: #000000, $alpha: 0.5)
 }

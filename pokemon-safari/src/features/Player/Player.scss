@@ -4,17 +4,19 @@
 }
 
 #player{
-  width: 133.5px;
-  height: 201px;
-  background-size: 536px 201px;
+  position: absolute;
+  width: 64px;
+  height: 96.36px;
+  top: 50%;
+  left: 50%;
   background-repeat: no-repeat;
-  transform: scale(0.4794);
-  background-position: 0 0px;
+  background-size: cover;
+  transform: translate(-50%, -50%);
 }
 
 @keyframes walkAnimation {
-  0%, 100% { background-position: -135px 0px; }
-  50% { background-position: -402px 0px; }
+  0%, 100% { background-position: -0px 0px; }
+  50% { background-position: -128px 0px; }
 }
 
 #player.walking {
