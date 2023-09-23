@@ -42,6 +42,7 @@ $font-display: 'Josefin Sans', sans-serif;
   overflow: hidden;
   margin: 15px;
   position: absolute;
+  transition: 0.35s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 .game-window img{

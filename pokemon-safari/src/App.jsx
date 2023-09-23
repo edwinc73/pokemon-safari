@@ -5,7 +5,9 @@ import './App.scss'
 
 import Key from "../src/features/Key/Key"
 import Player from "../src/features/Player/Player"
-import { handleMovement, mapCollisionCoord } from './js/movement'
+import { handleMovement } from './js/movement'
+import {getPokemonData, randomPokemon} from "./js/encounter"
+import {mapCoord} from "./js/mapCoord.js"
 
 function App() {
   const [direction, setDirection] = useState({
@@ -18,8 +20,24 @@ function App() {
     }
   })
 
-  //set collision locations
-  const [collisionMap, setCollisionMap] = useState(mapCollisionCoord(collisions))
+  // set map locations
+  const [collisionMap, setCollisionMap] = useState(()=>mapCoord(collisions))
+  const [grassMap, setGrassMap] = useState(()=>mapCoord(grassPatch))
+
+  // encounters
+  const [encounter, setEncounter] = useState(false)
+  const [pokemonList, setPokemonList] = useState([])
+  const [encounteredPokemon, setEncounteredPokemon] = useState("")
+
+
+  //get all pokemon and store in cache
+  useEffect(()=>{
+    const fetchData = async () => {
+      const data = await getPokemonData();
+      setPokemonList(data);
+    }
+    fetchData();
+  },[])
 
   // movement logic
   useEffect(()=>{
@@ -33,14 +51,18 @@ function App() {
   }, [])
 
   useEffect(()=>{
-        mapCollisionCoord(collisions, setCollisionMap)
+    if(encounter){
+      setEncounteredPokemon(randomPokemon(pokemonList))
+    }
+  }, [encounter])
 
-    const handleMovementWithState = handleMovement(direction, setDirection, directionKeys, collisionMap);
+  useEffect(()=>{
+    const handleMovementWithState = handleMovement(direction, setDirection, keyNames, collisionMap, grassMap, setEncounter, encounter);
     document.addEventListener('keydown', handleMovementWithState);
     return () => {
       document.removeEventListener('keydown', handleMovementWithState);
     };
-  }, [])
+  }, [encounter, direction])
 
   const directionKeys = ["↑","←","↓","→"]
   const keyNames = ["ArrowUp","ArrowLeft", "ArrowDown", "ArrowRight"]
