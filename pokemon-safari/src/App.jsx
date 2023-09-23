@@ -8,6 +8,7 @@ import Player from "../src/features/Player/Player"
 import { handleMovement } from './js/movement'
 import {getPokemonData, randomPokemon} from "./js/encounter"
 import {mapCoord} from "./js/mapCoord.js"
+import EncounterScreen from "./features/Encounter/EncounterScreen"
 
 function App() {
   const [direction, setDirection] = useState({
@@ -51,9 +52,17 @@ function App() {
   }, [])
 
   useEffect(()=>{
+    const encounterScreenDOM = document.querySelector("#encounter-screen")
     if(encounter){
       setEncounteredPokemon(randomPokemon(pokemonList))
+      encounterScreenDOM.classList.add("fade-in")
+    } else {
+      console.log(encounterScreenDOM.classList)
+      if(encounterScreenDOM.classList.contains("fade-in")){
+        encounterScreenDOM.classList.remove("fade-in")
+      }
     }
+    // on encounter change the game screen to encounter screen
   }, [encounter])
 
   useEffect(()=>{
@@ -78,20 +87,28 @@ function App() {
     height: ` ${backgroundSize.height}px`
   }
 
+  const safariMap = (
+  <div className={encounter ? "fade-out game d-flex" : "game d-flex"}>
+    <img src="/bg-map.png" id="game-backdrop"alt="" />
+    <div className="game-window p-5" style={backgroundStyle}>
+      <img src="/game-map.png" alt="" />
+    </div>
+      <Player direction = {direction.direction} />
+  </div>
+  )
+
+
   return (
     <>
       <div className="background-color">
-        <div className="game d-flex">
-          <img src="/bg-map.png" id="game-backdrop"alt="" />
-          <div className="game-window p-5" style={backgroundStyle}>
-            <img src="/game-map.png" alt="" />
-          </div>
-            <Player direction = {direction.direction} />
+        <div className="game-container">
+          {safariMap}
+          <EncounterScreen />
         </div>
-          <Key
-            directionKeys = {directionKeys}
-            keyNames = {keyNames}
-            />
+        <Key
+          directionKeys = {directionKeys}
+          keyNames = {keyNames}
+        />
       </div>
     </>
   )

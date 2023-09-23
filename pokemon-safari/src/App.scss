@@ -5,13 +5,16 @@
 $font-color: #242424;
 $font-display: 'Josefin Sans', sans-serif;
 // $font-game: ;`
+$game-container-margin: 30px;
+$game-container-size: 1200px;
 
 .background-color{
   background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239dade2' fill-opacity='0.11' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
   width: 100vw;
   height: 100vh;
   background-color: #5077f5;
-  padding: 30px;
+  padding: $game-container-margin;
+  position: relative;
 }
 
 #game-backdrop{
@@ -24,17 +27,33 @@ $font-display: 'Josefin Sans', sans-serif;
 }
 
 .game{
-  width: 1200px;
+  width: $game-container-size;
   font-family: $font-display;
-  height: 1200px;
+  height: $game-container-size;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   padding-bottom: 90px;
-  position: relative;
+  position: absolute;
+  top: $game-container-margin;
+  left: 50%;
+  right: 50%;
+  transform: translateX(-50%);
   margin: 0 auto;
   overflow: hidden;
   border-radius: 30px;
+}
+
+.fade-out{
+  animation: flashingFade 1.5s forwards;
+}
+
+@keyframes flashingFade {
+  0%   { opacity: 1; }
+  25%  { opacity: 0.5; }
+  50%  { opacity: 1; }
+  75%  { opacity: 0.5; }
+  100% { opacity: 0; }
 }
 
 .game-window{
@@ -43,9 +62,15 @@ $font-display: 'Josefin Sans', sans-serif;
   margin: 15px;
   position: absolute;
   transition: 0.35s cubic-bezier(0.19, 1, 0.22, 1);
+  img{
+    border-radius: 20px;
+    box-shadow: 0px 0px 30px rgba($color: #000000, $alpha: 0.5)
+  }
 }
 
-.game-window img{
-  border-radius: 20px;
-  box-shadow: 0px 0px 30px rgba($color: #000000, $alpha: 0.5)
+.game-container{
+  width: $game-container-size;
+  height: $game-container-size;
+  display: block;
+  margin: $game-container-margin;
 }
