@@ -19,11 +19,37 @@
     right: 0;
   }
 
+  .img-container{
+    position: relative;
+    overflow: visible;
+  }
+
+  #pokemonImage{
+    width: 384px;
+    height: 384px;
+    background-size: contain;
+  }
+
+  .pokemonImageShadow{
+    position: absolute;
+    bottom: 45px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 400px;
+    height: 60px;
+    background-color: rgba($color: #000000, $alpha:0.75);
+    z-index: -1;
+    border-radius: 50%;
+    filter: blur(25px);
+  }
+
   .player-section{
     position: absolute;
     bottom: 0;
     left: 0;
+    align-items:end;
   }
+
   .battle-interface{
     height: 25%;
   }
@@ -51,7 +77,14 @@
       font-size: 30px;
       font-weight: 700;
     }
+  }
 
+  .name-tag{
+    background-color: pink;
+    border:5px double black;
+    border-style: double;
+    height: fit-content;
+    margin: 30px;
   }
 
   .name{

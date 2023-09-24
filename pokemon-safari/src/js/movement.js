@@ -37,7 +37,7 @@ export const handleMovement = (direction, setDirection, keyNames, collisionMap, 
 
   const encounterPokemon = ()=>{
     if(grassMap[currentCoord.y][currentCoord.x] != 0){
-      if((Math.random() * 100) > encounterChance){
+      if((Math.random() * 100) < encounterChance){
         console.log("encountered a pokemon")
         setEncounter(true)
       }

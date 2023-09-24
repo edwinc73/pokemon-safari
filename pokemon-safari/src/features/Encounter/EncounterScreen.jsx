@@ -5,10 +5,15 @@ import "./Encounter.scss"
 const shinyChance = 5 // out of 100
 export default function EncounterScreen(props) {
 
-  const [isShiny , setIsShiny] = useState(()=> Math.floor((Math.random() * 100) + 1)< shinyChance )
-  const { encounteredPokemon } = props
-  // deconstructe object
+  // deconstruct object
+  const { encounteredPokemon, setEncounter, setEncounteredPokemon} = props
   const {name, base_experience, sprites, types, weight} = encounteredPokemon
+
+  //shiny logic
+  const [isShiny , setIsShiny] = useState(Math.floor(Math.random() * 100) < shinyChance )
+  useEffect(() => {
+    setIsShiny(Math.floor(Math.random() * 100) < shinyChance)
+  }, [encounteredPokemon])
 
   //pokemon logic
   const pokemonName = () => {
@@ -26,9 +31,12 @@ export default function EncounterScreen(props) {
   }
 
   if(encounteredPokemon){
-    console.log(encounteredPokemon)
-    console.log(normalSprite)
     console.log(isShiny)
+  }
+
+  const run = () => {
+    setEncounter(false)
+    setEncounteredPokemon("")
   }
 
   //capture logic
@@ -40,41 +48,45 @@ export default function EncounterScreen(props) {
     }, 1000);
   }
 
+  const pokemonImageStyle = {
+    backgroundImage : `url(${isShiny ? shinySprite.front : normalSprite.front})`
+  }
   return (
     <>
       <div id="encounter-screen" className='game d-flex'>
         <div className="battle-section p-3">
-          <div className="wild-pokemon">
+          <div className="wild-pokemon p-3">
             <div className="img-container">
-              <img src={isShiny ? shinySprite.front : normalSprite.front} alt="" />
+              <div id="pokemonImage" style={pokemonImageStyle}></div>
+              <div className='pokemonImageShadow'></div>
             </div>
-            <div className="name-tag">
+            <div className="name-tag rounded p-1">
               <div className="name">
                 {pokemonName()}
               </div>
             </div>
           </div>
-          <div className="player-section">
+          <div className="player-section d-flex justify-content-center">
             <PlayerThrowing />
-            <div className="name-tag">
-            <div className="name">
-              Player Name
+            <div className="name-tag rounded p-1">
+              <div className="name">
+                Player Name
+              </div>
+              <div className="items d-flex justify-content-between">
+                <div className="item">
+                  <img src="" alt="" /> x 1
+                </div>
+                <div className="item">
+                  <img src="" alt="" /> x 1
+                </div>
+                <div className="item">
+                  <img src="" alt="" /> x 1
+                </div>
+                <div className="item">
+                  <img src="" alt="" /> x 1
+                </div>
+              </div>
             </div>
-            <div className="items">
-              <div className="item">
-                <img src="" alt="" /> x 1
-              </div>
-              <div className="item">
-                <img src="" alt="" /> x 1
-              </div>
-              <div className="item">
-                <img src="" alt="" /> x 1
-              </div>
-              <div className="item">
-                <img src="" alt="" /> x 1
-              </div>
-            </div>
-          </div>
           </div>
         </div>
         <div className="battle-interface row w-100 p-3">
@@ -85,7 +97,7 @@ export default function EncounterScreen(props) {
             <div className="button rounded" onClick={setThrow}>Capture</div>
             <div className="button rounded">Item</div>
             <div className="button rounded">Pokeball</div>
-            <div className="button rounded">Run</div>
+            <div className="button rounded" onClick={run}>Run</div>
           </div>
         </div>
       </div>

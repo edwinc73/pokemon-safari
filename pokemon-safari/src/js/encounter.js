@@ -18,7 +18,6 @@ export const getEncounteredPokemon = async (encounteredPokemon) =>{
   try {
     const response = await fetch(encounteredPokemonURL)
     const data  = await response.json()
-    console.log(data)
     return data
   } catch (error) {
     console.error("Error occured", error)

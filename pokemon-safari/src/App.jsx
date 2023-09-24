@@ -35,6 +35,7 @@ function App() {
   const [pokemonList, setPokemonList] = useState([])
   const [encounteredPokemon, setEncounteredPokemon] = useState("")
 
+  //inventory
 
   //get all pokemon
   useEffect(()=>{
@@ -114,6 +115,8 @@ function App() {
           {safariMap}
           <EncounterScreen
             encounteredPokemon = {encounteredPokemon}
+            setEncounter = {setEncounter}
+            setEncounteredPokemon = {setEncounteredPokemon}
           />
         </div>
         <Key
