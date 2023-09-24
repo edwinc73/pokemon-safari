@@ -1,7 +1,7 @@
 import React from "react"
 import "./Player.scss"
 
-export default function Player(props){
+export function Player(props){
   const {direction} = props
 
   const playerStyle = {
@@ -13,6 +13,18 @@ export default function Player(props){
     <div className="player-container d-flex justify-content-center align-items-center">
       <div id="player" style={playerStyle}></div>
     </div>
+    </>
+  )
+}
+
+export function PlayerThrowing(){
+
+  const throwStyle = {
+    backgroundImage: `url(./throwing.png)`
+  };
+  return(
+    <>
+      <div className="img-container throw" id="player-throwing" style={throwStyle}></div>
     </>
   )
 }

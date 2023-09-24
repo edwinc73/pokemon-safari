@@ -22,3 +22,22 @@
 #player.walking {
   animation: walkAnimation 0.35s steps(2) infinite alternate;
 }
+
+#player-throwing{
+  height: 384px;
+  background-size: 1920px 384px;
+}
+
+.img-container{
+  width: 381px;
+  overflow: hidden;
+}
+
+.throw {
+  animation: throwingAnimation 1s steps(2) forwards
+}
+
+@keyframes throwingAnimation {
+  0%, 100% { background-position: -0px 0px; }
+  35% { background-position: -1536px 0px; }
+}

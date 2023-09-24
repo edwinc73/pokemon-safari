@@ -4,11 +4,13 @@ import viteLogo from '/vite.svg'
 import './App.scss'
 
 import Key from "../src/features/Key/Key"
-import Player from "../src/features/Player/Player"
+import {Player} from "../src/features/Player/Player"
 import { handleMovement } from './js/movement'
 import {getPokemonData, randomPokemon} from "./js/encounter"
 import {mapCoord} from "./js/mapCoord.js"
 import EncounterScreen from "./features/Encounter/EncounterScreen"
+import { getEncounteredPokemon } from "../src/js/encounter.js";
+
 
 function App() {
   const [direction, setDirection] = useState({
@@ -21,6 +23,9 @@ function App() {
     }
   })
 
+  // loading
+  const [loading, setLoading] = useState(false);
+
   // set map locations
   const [collisionMap, setCollisionMap] = useState(()=>mapCoord(collisions))
   const [grassMap, setGrassMap] = useState(()=>mapCoord(grassPatch))
@@ -31,7 +36,7 @@ function App() {
   const [encounteredPokemon, setEncounteredPokemon] = useState("")
 
 
-  //get all pokemon and store in cache
+  //get all pokemon
   useEffect(()=>{
     const fetchData = async () => {
       const data = await getPokemonData();
@@ -54,12 +59,17 @@ function App() {
   useEffect(()=>{
     const encounterScreenDOM = document.querySelector("#encounter-screen")
     if(encounter){
-      setEncounteredPokemon(randomPokemon(pokemonList))
-      encounterScreenDOM.classList.add("fade-in")
+      const fetchData = async  () => {
+        setLoading(true); // Start loading
+        const currentPokemon = await getEncounteredPokemon(randomPokemon(pokemonList));
+        setEncounteredPokemon(currentPokemon);
+        setLoading(false); // End loading
+      }
+      fetchData();
+      encounterScreenDOM.classList.add("fade-in");
     } else {
-      console.log(encounterScreenDOM.classList)
       if(encounterScreenDOM.classList.contains("fade-in")){
-        encounterScreenDOM.classList.remove("fade-in")
+        encounterScreenDOM.classList.remove("fade-in");
       }
     }
     // on encounter change the game screen to encounter screen
@@ -97,15 +107,17 @@ function App() {
   </div>
   )
 
-
   return (
     <>
       <div className="background-color">
         <div className="game-container">
           {safariMap}
-          <EncounterScreen />
+          <EncounterScreen
+            encounteredPokemon = {encounteredPokemon}
+          />
         </div>
         <Key
+
           directionKeys = {directionKeys}
           keyNames = {keyNames}
         />

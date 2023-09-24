@@ -3,15 +3,67 @@
   width: 1200px;
   height: 1200px;
   opacity: 0;
+  padding: 0;
+
   .battle-section{
     width: 100%;
     height: 75%;
     background-color: rgba($color: #000000, $alpha: 0.2);
+    justify-content: space-between;
+    position: relative;
+  }
+
+  .wild-pokemon{
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  .player-section{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+  }
+  .battle-interface{
+    height: 25%;
+  }
+
+  .system-message{
+    background-color: pink;
+    height: 100%;
+  }
+
+  .inferface-container{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 15px;
+    padding: 0;
+    padding-left: 15px;
+
+    .button{
+      width: 100%;
+      background-color: pink;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 30px;
+      font-weight: 700;
+    }
+
+  }
+
+  .name{
+    text-transform: capitalize;
+    font-size: 30px;
+    font-weight: 700;
   }
 }
 
+
 .fade-in{
-  animation: flashingFadeIn 1.5s forwards;
+  animation: flashingFadeIn 2s forwards;
 }
 
 @keyframes flashingFadeIn {
