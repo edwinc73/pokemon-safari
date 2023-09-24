@@ -37,6 +37,21 @@ function App() {
 
   //inventory
 
+  const [inventory, setInventory] = useState({
+    pokeballs:{
+      safari: 10,
+      premier: 0,
+      ultra: 0,
+      master: 0
+    },
+    baits:{
+      berry: 5,
+      banana: 2
+    },
+    etc:{
+    }
+  })
+
   //get all pokemon
   useEffect(()=>{
     const fetchData = async () => {

@@ -80,7 +80,7 @@
   }
 
   .name-tag{
-    background-color: pink;
+    background-color: white;
     border:5px double black;
     border-style: double;
     height: fit-content;
@@ -91,6 +91,11 @@
     text-transform: capitalize;
     font-size: 30px;
     font-weight: 700;
+  }
+
+  .shiny-icon{
+    width: 30px;
+    height: 30px;
   }
 }
 

@@ -3,11 +3,17 @@ import {PlayerThrowing} from "../Player/Player"
 import "./Encounter.scss"
 
 const shinyChance = 5 // out of 100
+const runChance = 75 //out of 100
+const pokemonMinimumLevel = 20 // out of 100
+const maxCatchChance = 400 // max chance
+const maxLevelModifier = 0.5 // out of 1 (50% difference)
+const actionIntervals = 2000 // seconds between actions
 export default function EncounterScreen(props) {
 
   // deconstruct object
   const { encounteredPokemon, setEncounter, setEncounteredPokemon} = props
-  const {name, base_experience, sprites, types, weight} = encounteredPokemon
+  const {name, sprites, types, weight} = encounteredPokemon
+  let base_experience = encounteredPokemon.base_experience || 255
 
   //shiny logic
   const [isShiny , setIsShiny] = useState(Math.floor(Math.random() * 100) < shinyChance )
@@ -16,9 +22,13 @@ export default function EncounterScreen(props) {
   }, [encounteredPokemon])
 
   //pokemon logic
-  const pokemonName = () => {
-    return encounteredPokemon && name.split("-")[0]
-  }
+
+  const [pokemonLevel, setPokemonLevel] = useState(pokemonMinimumLevel + Math.floor(Math.random() * 80))
+  const pokemonName = encounteredPokemon && name.split("-")[0]
+
+  useEffect(() => {
+    setPokemonLevel(pokemonMinimumLevel + Math.floor(Math.random() * 80))
+  }, [encounteredPokemon])
 
   const normalSprite = {
     front: sprites?.front_default,
@@ -30,23 +40,70 @@ export default function EncounterScreen(props) {
     back: sprites?.back_shiny
   }
 
-  if(encounteredPokemon){
-    console.log(isShiny)
+  //system messages
+  const messages = {
+    encounter: `You encountered a ${pokemonName}!`,
+    berry: `You used a berry, ${pokemonName} is now easier to catch`,
+    throw: "you throw a pokeball",
+    caught: `You caught a ${isShiny ? "shiny" : ""} ${pokemonName}`,
+    failed: "Darn, so close!",
+    failedRun: `${pokemonName} blocked your escape!`
   }
 
-  const run = () => {
-    setEncounter(false)
-    setEncounteredPokemon("")
-  }
+  const [systemMessage, setSystemMessage] = useState(messages.encounter)
+
+  useEffect(() => {
+    setSystemMessage(messages.encounter)
+  }, [encounteredPokemon])
 
   //capture logic
   const setThrow = () => {
     const playerThrowing = document.querySelector("#player-throwing")
+    setSystemMessage(messages.throw)
     playerThrowing.classList.add("throw")
+
+    setTimeout(() => {
+      if(isCaught()){
+        setTimeout(() => {
+          setSystemMessage(messages.caught)
+          setTimeout(() => {
+            clearEncounter()
+          }, actionIntervals);
+        }, actionIntervals);
+      } else {
+        setSystemMessage(messages.failed)
+      }
+    }, actionIntervals);
+
     setTimeout(() => {
       playerThrowing.classList.remove("throw")
-    }, 1000);
+    }, actionIntervals);
   }
+
+  const isCaught = () => {
+    const levelAdjuster = ((pokemonLevel / 100) * maxLevelModifier) + 1
+    const attempt =  Math.floor(Math.random() * maxCatchChance)
+    return attempt > base_experience * levelAdjuster
+  }
+
+
+  //run logic
+  const run = () => {
+    if(runChance > Math.floor(Math.random() * 100)){
+      clearEncounter()
+    } else {
+      setSystemMessage(messages.failedRun)
+    }
+  }
+
+  const clearEncounter = () =>{
+    setEncounter(false)
+    setEncounteredPokemon("")
+  }
+
+
+
+
 
   const pokemonImageStyle = {
     backgroundImage : `url(${isShiny ? shinySprite.front : normalSprite.front})`
@@ -62,7 +119,8 @@ export default function EncounterScreen(props) {
             </div>
             <div className="name-tag rounded p-1">
               <div className="name">
-                {pokemonName()}
+                {pokemonName} Lv{pokemonLevel}
+                {isShiny && <span><img src="./sparkle.svg" className="shiny-icon" alt="" /></span>}
               </div>
             </div>
           </div>
@@ -91,11 +149,11 @@ export default function EncounterScreen(props) {
         </div>
         <div className="battle-interface row w-100 p-3">
           <div className="system-message rounded col-6 p-3">
-            What would you like to do?
+            {systemMessage}
           </div>
           <div className="inferface-container col-6">
             <div className="button rounded" onClick={setThrow}>Capture</div>
-            <div className="button rounded">Item</div>
+            <div className="button rounded">Items</div>
             <div className="button rounded">Pokeball</div>
             <div className="button rounded" onClick={run}>Run</div>
           </div>
