@@ -52,6 +52,9 @@ function App() {
     }
   })
 
+  // caught pokemon
+  const [caugthtPokemon, setCaughtPokemon] = useState([])
+
   //get all pokemon
   useEffect(()=>{
     const fetchData = async () => {
