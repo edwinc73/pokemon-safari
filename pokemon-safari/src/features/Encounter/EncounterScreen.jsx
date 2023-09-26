@@ -75,9 +75,12 @@ export default function EncounterScreen(props) {
     if(!throwing && !caught){
       setThrowing(true)
       const playerThrowing = document.querySelector("#player-throwing")
+      const ballContainer = document.querySelector(".ball-container")
 
       setSystemMessage(messages.throw)
       playerThrowing.classList.add("throw")
+      ballContainer.classList.add("ball-animation")
+
 
       const wasCaught = isCaught();
       setCaught(wasCaught);
@@ -103,6 +106,7 @@ export default function EncounterScreen(props) {
       setTimeout(() => {
           setThrowing(false);
           playerThrowing.classList.remove("throw");
+          // ballContainer.classList.remove("ball-animation")
       }, actionIntervals / 2);
     }
   }
@@ -149,6 +153,7 @@ export default function EncounterScreen(props) {
           </div>
           <div className="player-section d-flex justify-content-center">
             <PlayerThrowing />
+            <div className="ball-container"></div>
             <div className="name-tag rounded p-1">
               <div className="name">
                 Player Name
