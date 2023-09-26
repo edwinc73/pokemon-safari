@@ -1,6 +1,6 @@
-import { CalculationInterpolation } from "sass"
-
+import { nanoid } from 'nanoid'
 const pokemonApi = "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1292"
+
 
 export const getPokemonData = async () =>{
   const response = await fetch(pokemonApi)

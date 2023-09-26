@@ -1,24 +1,34 @@
 import React, { useEffect, useState } from 'react'
+import { nanoid } from 'nanoid'
+
 import {PlayerThrowing} from "../Player/Player"
 import "./Encounter.scss"
+import Pokemon from "../../js/Pokemon.js"
+import CaughtPokemon from "../../js/Pokemon.js"
+
 
 const shinyChance = 5 // out of 100
 const runChance = 75 //out of 100
 const pokemonMinimumLevel = 20 // out of 100
-const maxCatchChance = 400 // max chance
+// const maxCatchChance = 400 // max chance
+const maxCatchChance = 1 // test max chance
+
 const maxLevelModifier = 0.5 // out of 1 (50% difference)
 const actionIntervals = 2000 // seconds between actions
 export default function EncounterScreen(props) {
 
   // deconstruct object
-  const { encounteredPokemon, setEncounter, setEncounteredPokemon} = props
+  const { encounteredPokemon, setEncounter, setEncounteredPokemon, setCaughtPokemonList} = props
   const {name, sprites, types, weight} = encounteredPokemon
   let base_experience = encounteredPokemon.base_experience || 255
+
+  const [caught, setCaught] = useState(false)
 
   //shiny logic
   const [isShiny , setIsShiny] = useState(Math.floor(Math.random() * 100) < shinyChance )
   useEffect(() => {
     setIsShiny(Math.floor(Math.random() * 100) < shinyChance)
+    setCaught(false)
   }, [encounteredPokemon])
 
   //pokemon logic
@@ -42,6 +52,7 @@ export default function EncounterScreen(props) {
 
   //system messages
   const messages = {
+    default: "What would you like to do?",
     encounter: `You encountered a ${pokemonName}!`,
     berry: `You used a berry, ${pokemonName} is now easier to catch`,
     throw: "you throw a pokeball",
@@ -57,27 +68,43 @@ export default function EncounterScreen(props) {
   }, [encounteredPokemon])
 
   //capture logic
-  const setThrow = () => {
-    const playerThrowing = document.querySelector("#player-throwing")
-    setSystemMessage(messages.throw)
-    playerThrowing.classList.add("throw")
+  const [throwing, setThrowing] = useState(false)
 
-    setTimeout(() => {
-      if(isCaught()){
-        setTimeout(() => {
-          setSystemMessage(messages.caught)
-          setTimeout(() => {
-            clearEncounter()
-          }, actionIntervals);
-        }, actionIntervals);
-      } else {
-        setSystemMessage(messages.failed)
-      }
-    }, actionIntervals);
+   const setThrow = async () => {
 
-    setTimeout(() => {
-      playerThrowing.classList.remove("throw")
-    }, actionIntervals);
+    if(!throwing && !caught){
+      setThrowing(true)
+      const playerThrowing = document.querySelector("#player-throwing")
+
+      setSystemMessage(messages.throw)
+      playerThrowing.classList.add("throw")
+
+      const wasCaught = isCaught();
+      setCaught(wasCaught);
+
+      await setTimeout(() => {
+        if(wasCaught){
+          setTimeout(()=>{
+            const caughtPokemon = new CaughtPokemon(nanoid(), pokemonName, isShiny ? shinySprite.front : normalSprite.front, pokemonLevel, isShiny);
+            setCaughtPokemonList(prevState => [...prevState, caughtPokemon]);
+            setSystemMessage(messages.caught);
+            setTimeout(() => {
+              clearEncounter();
+            }, actionIntervals * 2);
+          }, actionIntervals)
+        } else {
+            setSystemMessage(messages.failed);
+            setTimeout(() => {
+                setSystemMessage(messages.default);
+            }, actionIntervals);
+        }
+      }, actionIntervals);
+
+      setTimeout(() => {
+          setThrowing(false);
+          playerThrowing.classList.remove("throw");
+      }, actionIntervals / 2);
+    }
   }
 
   const isCaught = () => {
@@ -85,7 +112,6 @@ export default function EncounterScreen(props) {
     const attempt =  Math.floor(Math.random() * maxCatchChance)
     return attempt > base_experience * levelAdjuster
   }
-
 
   //run logic
   const run = () => {
@@ -100,9 +126,6 @@ export default function EncounterScreen(props) {
     setEncounter(false)
     setEncounteredPokemon("")
   }
-
-
-
 
 
   const pokemonImageStyle = {
@@ -148,7 +171,7 @@ export default function EncounterScreen(props) {
           </div>
         </div>
         <div className="battle-interface row w-100 p-3">
-          <div className="system-message rounded col-6 p-3">
+          <div className="system-message rounded col-6 p-3 d-flex justify-content-left align-items-center">
             {systemMessage}
           </div>
           <div className="inferface-container col-6">

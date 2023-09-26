@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.scss'
 
 import Key from "../src/features/Key/Key"
@@ -10,6 +8,7 @@ import {getPokemonData, randomPokemon} from "./js/encounter"
 import {mapCoord} from "./js/mapCoord.js"
 import EncounterScreen from "./features/Encounter/EncounterScreen"
 import { getEncounteredPokemon } from "../src/js/encounter.js";
+import Pokemon from "../src/js/Pokemon.js";
 
 
 function App() {
@@ -53,7 +52,7 @@ function App() {
   })
 
   // caught pokemon
-  const [caugthtPokemon, setCaughtPokemon] = useState([])
+  const [caughtPokemonList, setCaughtPokemonList] = useState([])
 
   //get all pokemon
   useEffect(()=>{
@@ -80,7 +79,7 @@ function App() {
     if(encounter){
       const fetchData = async  () => {
         setLoading(true); // Start loading
-        const currentPokemon = await getEncounteredPokemon(randomPokemon(pokemonList));
+        const currentPokemon = await getEncounteredPokemon(randomPokemon(pokemonList))
         setEncounteredPokemon(currentPokemon);
         setLoading(false); // End loading
       }
@@ -135,6 +134,7 @@ function App() {
             encounteredPokemon = {encounteredPokemon}
             setEncounter = {setEncounter}
             setEncounteredPokemon = {setEncounteredPokemon}
+            setCaughtPokemonList = {setCaughtPokemonList}
           />
         </div>
         <Key
