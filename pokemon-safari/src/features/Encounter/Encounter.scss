@@ -82,18 +82,20 @@
   }
 
   .ball-container{
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
+    position: fixed;
+    top: 650px;
+    left: 25px;
+    // right: unset;
+    // bottom: unset;
     // left: 705px;
     // top: -10px;
     width: 50px;
     height: 50px;
     background-color: black;
     border-radius: 50%;
-    will-change: transform, opacity;
-    transform: translateZ(0);
+    opacity: 0;
+    // will-change: transform, opacity;
+    // transform: translateZ(0);
   }
 
   .name-tag{
@@ -129,15 +131,22 @@
 }
 
 .ball-animation{
-  animation: throwBall 3s infinite;
+  // animation: throwBall 3s infinite;
+  opacity: 0;
+  animation:
+  y 0.8s cubic-bezier(0,480,1,480),
+  x 0.8s linear;
+  animation-delay: 0.22s;
 }
 
-@keyframes throwBall {
-  0% {
-    transform: translate(-175px, 350px);
-  }
-  100% {
-    transform: translate(705px, -10px);
+@keyframes x {
+  to {
     opacity: 1;
+    left: 975px;
+  }
+}
+@keyframes y {
+  to {
+    transform: translateY(-1.8px);
   }
 }

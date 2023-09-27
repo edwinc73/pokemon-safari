@@ -104,9 +104,13 @@ export default function EncounterScreen(props) {
       }, actionIntervals);
 
       setTimeout(() => {
+        ballContainer.classList.remove("ball-animation")
+        //add flash for a little bit then the pokeball shake appears
+    }, 930);
+
+      setTimeout(() => {
           setThrowing(false);
           playerThrowing.classList.remove("throw");
-          // ballContainer.classList.remove("ball-animation")
       }, actionIntervals / 2);
     }
   }
