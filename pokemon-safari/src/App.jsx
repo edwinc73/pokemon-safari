@@ -38,8 +38,8 @@ function App() {
 
   const [inventory, setInventory] = useState({
     pokeballs:{
-      safari: 10,
-      premier: 0,
+      pokeball: 10,
+      great: 0,
       ultra: 0,
       master: 0
     },

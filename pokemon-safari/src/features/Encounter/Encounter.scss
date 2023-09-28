@@ -28,6 +28,7 @@
     width: 384px;
     height: 384px;
     background-size: contain;
+    transition: 0.2s ease-in-out;
   }
 
   .pokemonImageShadow{
@@ -78,24 +79,25 @@
       font-size: 30px;
       font-weight: 700;
     }
+  }
 
+  #pokemonBallAnimation{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
   }
 
   .ball-container{
     position: fixed;
     top: 650px;
     left: 25px;
-    // right: unset;
-    // bottom: unset;
-    // left: 705px;
-    // top: -10px;
-    width: 50px;
-    height: 50px;
-    background-color: black;
-    border-radius: 50%;
+    width: 64px;
+    height: 104px;
+    background-size: 448px 104px;
+    background-image: url("public/pokeballs/pokeball/Throwing.png");
     opacity: 0;
-    // will-change: transform, opacity;
-    // transform: translateZ(0);
   }
 
   .name-tag{
@@ -118,6 +120,63 @@
   }
 }
 
+.catching::after{
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 155px;
+  width: calc(200px / 3);
+  height: 104px;
+  background-size: 200px 104px;
+  background-position: calc(200px / 3 * 2);
+  background-image: url("./public/pokeballs/pokeball/Catching.png");
+  animation: 2s catchingAnimation steps(2) infinite;
+  transform-origin: bottom center;
+}
+
+$pokeballTilt: 20deg;
+
+@keyframes catchingAnimation{
+  0%, 100% { transform: rotate(-$pokeballTilt); }
+  50% { transform: rotate($pokeballTilt); }
+}
+
+.catching-fail::after{
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 155px;
+  width: calc(200px / 3);
+  height: 104px;
+  background-size: 200px 104px;
+  background-position: calc(200px / 3 * 2);
+  background-image: url("./public/pokeballs/pokeball/Fail.png");
+  animation: 0.5s catchingFail steps(2) infinite;
+}
+
+@keyframes catchingFail{
+  0%, 100% { background-position: -0px 0px; }
+  50% { background-position: calc(-200px / 3 * 2) 0px; }
+}
+
+.catching-success::after{
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 155px;
+  width: calc(200px / 3);
+  height: 104px;
+  background-size: 124px 104px;
+  background-position: calc(200px / 3 * 2);
+  background-image: url("./public/pokeballs/pokeball/Success.png");
+  animation: 1s catchingSuccess steps(1) forwards;
+}
+
+@keyframes catchingSuccess{
+  0%, 100% { background-position: -0px 0px; }
+  50% { background-position: -62px 0px; }
+}
+
 .fade-in{
   animation: flashingFadeIn 2s forwards;
 }
@@ -131,14 +190,39 @@
 }
 
 .ball-animation{
-  // animation: throwBall 3s infinite;
   opacity: 0;
   animation:
   y 0.8s cubic-bezier(0,480,1,480),
-  x 0.8s linear;
+  x 0.8s linear,
+  0.5s ballthrow steps(6) infinite ;
   animation-delay: 0.22s;
 }
 
+.flash::after{
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: rgb(207, 207, 207);
+  filter: blur(50px);
+  opacity: 1;
+  animation: fadeout 1.5s forwards
+}
+
+@keyframes ballthrow {
+  0%, 100% { background-position: -0px 0px; }
+  50% { background-position: -384px 0px; }
+}
+
+@keyframes fadeout {
+  to {
+    opacity: 0;
+    filter: blur(300px);
+  }
+}
 @keyframes x {
   to {
     opacity: 1;
@@ -149,4 +233,8 @@
   to {
     transform: translateY(-1.8px);
   }
+}
+
+.unshow{
+  opacity: 0;
 }

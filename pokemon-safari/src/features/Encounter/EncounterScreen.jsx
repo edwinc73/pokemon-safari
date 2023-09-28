@@ -11,10 +11,9 @@ const shinyChance = 5 // out of 100
 const runChance = 75 //out of 100
 const pokemonMinimumLevel = 20 // out of 100
 // const maxCatchChance = 400 // max chance
-const maxCatchChance = 1 // test max chance
+const maxCatchChance = 10000 // test max chance
 
 const maxLevelModifier = 0.5 // out of 1 (50% difference)
-const actionIntervals = 2000 // seconds between actions
 export default function EncounterScreen(props) {
 
   // deconstruct object
@@ -70,12 +69,20 @@ export default function EncounterScreen(props) {
   //capture logic
   const [throwing, setThrowing] = useState(false)
 
-   const setThrow = async () => {
-
+  const flashAnimation = (node) => {
+    node.classList.add("flash")
+    setTimeout(() => {
+      node.classList.remove("flash")
+    }, 1500);
+  }
+    const setThrow = async () => {
+    const pokemonImage = document.querySelector("#pokemonImage")
+    // time to load the catching? animation in ms
     if(!throwing && !caught){
       setThrowing(true)
       const playerThrowing = document.querySelector("#player-throwing")
       const ballContainer = document.querySelector(".ball-container")
+      const pokemonBallAnimation = document.querySelector("#pokemonBallAnimation")
 
       setSystemMessage(messages.throw)
       playerThrowing.classList.add("throw")
@@ -85,33 +92,70 @@ export default function EncounterScreen(props) {
       const wasCaught = isCaught();
       setCaught(wasCaught);
 
-      await setTimeout(() => {
+      const maxCatchingTime = 2000 + 2000/3
+      const randomCatchingTime = () => {
+        let randomTime = Math.random()
+        if(wasCaught){
+          return randomTime > 0.9 ? 2000 / 3 : maxCatchingTime
+        }
+
+        if(randomTime > 0.8){
+          return 500
+        } else if (randomTime > 0.65){
+          return 2000 / 3
+        } else if (randomTime > 0.3){
+          return 2000 / 3 * 2
+        } else {
+          return maxCatchingTime
+        }
+      }
+
+      const randTime = randomCatchingTime()
+
+      setTimeout(() => {
         if(wasCaught){
           setTimeout(()=>{
             const caughtPokemon = new CaughtPokemon(nanoid(), pokemonName, isShiny ? shinySprite.front : normalSprite.front, pokemonLevel, isShiny);
             setCaughtPokemonList(prevState => [...prevState, caughtPokemon]);
             setSystemMessage(messages.caught);
             setTimeout(() => {
+              pokemonBallAnimation?.classList.remove("catching-success")
               clearEncounter();
-            }, actionIntervals * 2);
-          }, actionIntervals)
+            }, 3000);
+          }, randTime)
         } else {
             setSystemMessage(messages.failed);
             setTimeout(() => {
                 setSystemMessage(messages.default);
-            }, actionIntervals);
+            }, randTime);
         }
-      }, actionIntervals);
+      }, randTime);
 
       setTimeout(() => {
         ballContainer.classList.remove("ball-animation")
-        //add flash for a little bit then the pokeball shake appears
-    }, 930);
+        flashAnimation(pokemonImage)
+        pokemonImage.classList.add("unshow")
+        pokemonBallAnimation.classList.add("catching")
+        setTimeout(() => {
+          if(wasCaught){
+            pokemonBallAnimation.classList.add("catching-success")
+          } else {
+            pokemonBallAnimation.classList.add("catching-fail")
+            setTimeout(() => {
+              pokemonBallAnimation.classList.remove("catching-fail")
+              flashAnimation(pokemonImage)
+              pokemonImage.classList.remove("unshow")
+            }, 500);
+          }
+          pokemonBallAnimation.classList.remove("catching")
+        }, randTime);
+      }, 920);
+
 
       setTimeout(() => {
           setThrowing(false);
           playerThrowing.classList.remove("throw");
-      }, actionIntervals / 2);
+      }, randTime + 500);
     }
   }
 
@@ -146,6 +190,7 @@ export default function EncounterScreen(props) {
           <div className="wild-pokemon p-3">
             <div className="img-container">
               <div id="pokemonImage" style={pokemonImageStyle}></div>
+              <div id="pokemonBallAnimation" className=''> </div>
               <div className='pokemonImageShadow'></div>
             </div>
             <div className="name-tag rounded p-1">
