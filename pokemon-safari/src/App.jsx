@@ -8,7 +8,6 @@ import {getPokemonData, randomPokemon} from "./js/encounter"
 import {mapCoord} from "./js/mapCoord.js"
 import EncounterScreen from "./features/Encounter/EncounterScreen"
 import { getEncounteredPokemon } from "../src/js/encounter.js";
-import Pokemon from "../src/js/Pokemon.js";
 
 
 function App() {
@@ -17,8 +16,6 @@ function App() {
     movementValue:{
       x: -610,
       y: -1150
-      // x: 510,
-      // y: 530
     }
   })
 
@@ -37,12 +34,28 @@ function App() {
   //inventory
 
   const [inventory, setInventory] = useState({
-    pokeballs:{
-      pokeball: 10,
-      great: 0,
-      ultra: 0,
-      master: 0
-    },
+      pokeballs:[
+        {pokeball: {
+          quantity: 10,
+          value: 0,
+          rarity: 1
+        }},
+        {greatball: {
+          quantity: 0,
+          value: 20,
+          rarity: 0.4
+        }},
+        {ultraball: {
+          quantity: 0,
+          value: 60,
+          rarity: 0.2
+        }},
+        {masterball: {
+          quantity: 0,
+          value: 4000,
+          rarity: 0.025
+        }}
+      ],
     baits:{
       berry: 5,
       banana: 2
@@ -94,7 +107,8 @@ function App() {
   }, [encounter])
 
   useEffect(()=>{
-    const handleMovementWithState = handleMovement(direction, setDirection, keyNames, collisionMap, grassMap, setEncounter, encounter);
+    const handleMovementWithState = handleMovement(direction, setDirection, keyNames, collisionMap, grassMap, setEncounter, encounter, inventory
+      ,setInventory);
     document.addEventListener('keydown', handleMovementWithState);
     return () => {
       document.removeEventListener('keydown', handleMovementWithState);
@@ -135,6 +149,8 @@ function App() {
             setEncounter = {setEncounter}
             setEncounteredPokemon = {setEncounteredPokemon}
             setCaughtPokemonList = {setCaughtPokemonList}
+            inventory = {inventory}
+            setInventory = {setInventory}
           />
         </div>
         <Key

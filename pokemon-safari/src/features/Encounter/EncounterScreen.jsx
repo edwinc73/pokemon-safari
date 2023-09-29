@@ -3,23 +3,34 @@ import { nanoid } from 'nanoid'
 
 import {PlayerThrowing} from "../Player/Player"
 import "./Encounter.scss"
-import Pokemon from "../../js/Pokemon.js"
 import CaughtPokemon from "../../js/Pokemon.js"
 
 
 const shinyChance = 5 // out of 100
 const runChance = 75 //out of 100
 const pokemonMinimumLevel = 20 // out of 100
-// const maxCatchChance = 400 // max chance
-const maxCatchChance = 10000 // test max chance
+const maxCatchChance = 400 // max chance
+// const maxCatchChance = 1 // test max chance
 
 const maxLevelModifier = 0.5 // out of 1 (50% difference)
 export default function EncounterScreen(props) {
 
   // deconstruct object
-  const { encounteredPokemon, setEncounter, setEncounteredPokemon, setCaughtPokemonList} = props
+  const { encounteredPokemon, setEncounter, setEncounteredPokemon, setCaughtPokemonList, inventory, setInventory} = props
   const {name, sprites, types, weight} = encounteredPokemon
   let base_experience = encounteredPokemon.base_experience || 255
+
+  const [currentPokeball, setCurrentPokeball] = useState("greatball")
+  let selectedPokeball = inventory.pokeballs.find(element => "greatball")
+
+  useEffect(()=> {
+    setCurrentPokeball("pokeball")
+  },[encounteredPokemon])
+
+  useEffect(() => {
+    selectedPokeball = inventory.pokeballs.find(element => currentPokeball)
+  }, [currentPokeball])
+
 
   const [caught, setCaught] = useState(false)
 
@@ -76,9 +87,10 @@ export default function EncounterScreen(props) {
     }, 1500);
   }
     const setThrow = async () => {
+      console.log(selectedPokeball.pokeball.quantity)
     const pokemonImage = document.querySelector("#pokemonImage")
-    // time to load the catching? animation in ms
-    if(!throwing && !caught){
+
+    if(!throwing && !caught && selectedPokeball.pokeball.quantity > 0){
       setThrowing(true)
       const playerThrowing = document.querySelector("#player-throwing")
       const ballContainer = document.querySelector(".ball-container")
@@ -155,14 +167,16 @@ export default function EncounterScreen(props) {
       setTimeout(() => {
           setThrowing(false);
           playerThrowing.classList.remove("throw");
-      }, randTime + 500);
+      }, randTime + 920 + 500);
     }
   }
 
   const isCaught = () => {
+    const pokeballValue = selectedPokeball.pokeball.value
     const levelAdjuster = ((pokemonLevel / 100) * maxLevelModifier) + 1
     const attempt =  Math.floor(Math.random() * maxCatchChance)
-    return attempt > base_experience * levelAdjuster
+    console.log((attempt + pokeballValue) , (base_experience * maxLevelModifier))
+    return attempt + pokeballValue > base_experience * levelAdjuster
   }
 
   //run logic
@@ -239,3 +253,6 @@ export default function EncounterScreen(props) {
     </>
   )
 }
+
+// now to add diffreent pokeballs and their effects
+// add lazy loading and a loading screen to make sure the images are loaded in before the user sees it

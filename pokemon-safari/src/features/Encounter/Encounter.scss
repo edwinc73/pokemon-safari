@@ -96,7 +96,7 @@
     width: 64px;
     height: 104px;
     background-size: 448px 104px;
-    background-image: url("public/pokeballs/pokeball/Throwing.png");
+    background-image: url("/pokeballs/pokeball/Throwing.png");
     opacity: 0;
   }
 
@@ -129,7 +129,7 @@
   height: 104px;
   background-size: 200px 104px;
   background-position: calc(200px / 3 * 2);
-  background-image: url("./public/pokeballs/pokeball/Catching.png");
+  background-image: url("/pokeballs/pokeball/Catching.png");
   animation: 2s catchingAnimation steps(2) infinite;
   transform-origin: bottom center;
 }
@@ -150,7 +150,7 @@ $pokeballTilt: 20deg;
   height: 104px;
   background-size: 200px 104px;
   background-position: calc(200px / 3 * 2);
-  background-image: url("./public/pokeballs/pokeball/Fail.png");
+  background-image: url("/pokeballs/pokeball/Fail.png");
   animation: 0.5s catchingFail steps(2) infinite;
 }
 
@@ -168,7 +168,7 @@ $pokeballTilt: 20deg;
   height: 104px;
   background-size: 124px 104px;
   background-position: calc(200px / 3 * 2);
-  background-image: url("./public/pokeballs/pokeball/Success.png");
+  background-image: url("/pokeballs/pokeball/Success.png");
   animation: 1s catchingSuccess steps(1) forwards;
 }
 
