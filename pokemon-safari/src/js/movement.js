@@ -46,7 +46,7 @@ export const handleMovement = (direction, setDirection, keyNames, collisionMap, 
   // movement logic
   switch (e.key) {
     case "ArrowUp":
-      if(collisionMap[currentCoord.y -1][currentCoord.x] == 0) {
+      if(collisionMap[currentCoord.y -1][currentCoord.x] == 0 && !encounter) {
         encounterPokemon()
         setDirection(prevState => {
           return {
@@ -60,7 +60,7 @@ export const handleMovement = (direction, setDirection, keyNames, collisionMap, 
       }
       break;
     case "ArrowDown":
-      if(collisionMap[currentCoord.y + 1][currentCoord.x] == 0){
+      if(collisionMap[currentCoord.y + 1][currentCoord.x] == 0 && !encounter){
         encounterPokemon()
         setDirection(prevState => {
           return {
@@ -74,7 +74,7 @@ export const handleMovement = (direction, setDirection, keyNames, collisionMap, 
       }
       break;
     case "ArrowLeft":
-      if (collisionMap[currentCoord.y][currentCoord.x - 1] == 0) {
+      if (collisionMap[currentCoord.y][currentCoord.x - 1] == 0 && !encounter) {
         encounterPokemon()
         setDirection(prevState => {
           return {
@@ -89,7 +89,7 @@ export const handleMovement = (direction, setDirection, keyNames, collisionMap, 
       break;
 
     case "ArrowRight":
-      if (collisionMap[currentCoord.y][currentCoord.x + 1] == 0) {
+      if (collisionMap[currentCoord.y][currentCoord.x + 1] == 0 && !encounter) {
         encounterPokemon()
         setDirection(prevState => {
           return{

@@ -2,15 +2,16 @@ import React, { useEffect, useState } from 'react'
 import { nanoid } from 'nanoid'
 
 import {PlayerThrowing} from "../Player/Player"
-import "./Encounter.scss"
+import "./EncounterScreen.scss"
 import CaughtPokemon from "../../js/Pokemon.js"
 
 
 const shinyChance = 5 // out of 100
 const runChance = 75 //out of 100
 const pokemonMinimumLevel = 20 // out of 100
-const maxCatchChance = 400 // max chance
+const maxCatchChance = 400 // max chances
 // const maxCatchChance = 1 // test max chance
+const defaultPokeBall = "pokeball"
 
 const maxLevelModifier = 0.5 // out of 1 (50% difference)
 export default function EncounterScreen(props) {
@@ -20,34 +21,28 @@ export default function EncounterScreen(props) {
   const {name, sprites, types, weight} = encounteredPokemon
   let base_experience = encounteredPokemon.base_experience || 255
 
-  const [currentPokeball, setCurrentPokeball] = useState("greatball")
-  let selectedPokeball = inventory.pokeballs.find(element => "greatball")
+  // setting the default pokeball
+  const [currentPokeball, setCurrentPokeball] = useState(defaultPokeBall)
+  let selectedPokeball = inventory[0].pokeballs.find(element => defaultPokeBall)
 
   useEffect(()=> {
-    setCurrentPokeball("pokeball")
+    setCurrentPokeball(defaultPokeBall)
   },[encounteredPokemon])
 
   useEffect(() => {
-    selectedPokeball = inventory.pokeballs.find(element => currentPokeball)
+    selectedPokeball = inventory[0].pokeballs.find(element => currentPokeball)
   }, [currentPokeball])
-
-
-  const [caught, setCaught] = useState(false)
-
-  //shiny logic
-  const [isShiny , setIsShiny] = useState(Math.floor(Math.random() * 100) < shinyChance )
-  useEffect(() => {
-    setIsShiny(Math.floor(Math.random() * 100) < shinyChance)
-    setCaught(false)
-  }, [encounteredPokemon])
 
   //pokemon logic
 
   const [pokemonLevel, setPokemonLevel] = useState(pokemonMinimumLevel + Math.floor(Math.random() * 80))
   const pokemonName = encounteredPokemon && name.split("-")[0]
 
+  //shiny logic
+  const [isShiny , setIsShiny] = useState(Math.floor(Math.random() * 100) < shinyChance )
   useEffect(() => {
-    setPokemonLevel(pokemonMinimumLevel + Math.floor(Math.random() * 80))
+    setIsShiny(Math.floor(Math.random() * 100) < shinyChance)
+    setCaught(false)
   }, [encounteredPokemon])
 
   const normalSprite = {
@@ -79,6 +74,23 @@ export default function EncounterScreen(props) {
 
   //capture logic
   const [throwing, setThrowing] = useState(false)
+  const [caught, setCaught] = useState(false)
+
+  useEffect(() => {
+    setCaught(false)
+  }, [encounteredPokemon])
+
+  const isCaught = () => {
+    const pokeballValue = selectedPokeball.pokeball.value
+    const levelAdjuster = ((pokemonLevel / 100) * maxLevelModifier) + 1
+    const attempt =  Math.floor(Math.random() * maxCatchChance)
+    return attempt + pokeballValue > base_experience * levelAdjuster
+  }
+
+  // set pokemon level
+  useEffect(() => {
+    setPokemonLevel(pokemonMinimumLevel + Math.floor(Math.random() * 80))
+  }, [encounteredPokemon])
 
   const flashAnimation = (node) => {
     node.classList.add("flash")
@@ -86,9 +98,15 @@ export default function EncounterScreen(props) {
       node.classList.remove("flash")
     }, 1500);
   }
-    const setThrow = async () => {
-      console.log(selectedPokeball.pokeball.quantity)
+
+  // catching
+  const setThrow = async () => {
     const pokemonImage = document.querySelector("#pokemonImage")
+
+    const setPokeBallImage =  (element, action) => {
+      element.classList.add(`catching${action ? "-"+action : ""}`)
+      element.style.backgroundImage = `url("/pokeballs/${currentPokeball}/${action ? action[0].toUpperCase() + action.slice(1) : "Catching"}.png")`
+    }
 
     if(!throwing && !caught && selectedPokeball.pokeball.quantity > 0){
       setThrowing(true)
@@ -98,13 +116,15 @@ export default function EncounterScreen(props) {
 
       setSystemMessage(messages.throw)
       playerThrowing.classList.add("throw")
-      ballContainer.classList.add("ball-animation")
 
+      ballContainer.classList.add("ball-animation")
+      ballContainer.style.backgroundImage = `url("/pokeballs/${currentPokeball}/Throwing.png")`
 
       const wasCaught = isCaught();
       setCaught(wasCaught);
 
       const maxCatchingTime = 2000 + 2000/3
+
       const randomCatchingTime = () => {
         let randomTime = Math.random()
         if(wasCaught){
@@ -147,12 +167,12 @@ export default function EncounterScreen(props) {
         ballContainer.classList.remove("ball-animation")
         flashAnimation(pokemonImage)
         pokemonImage.classList.add("unshow")
-        pokemonBallAnimation.classList.add("catching")
+        setPokeBallImage(pokemonBallAnimation, "")
         setTimeout(() => {
           if(wasCaught){
-            pokemonBallAnimation.classList.add("catching-success")
+            setPokeBallImage(pokemonBallAnimation, "success")
           } else {
-            pokemonBallAnimation.classList.add("catching-fail")
+            setPokeBallImage(pokemonBallAnimation, "fail")
             setTimeout(() => {
               pokemonBallAnimation.classList.remove("catching-fail")
               flashAnimation(pokemonImage)
@@ -161,23 +181,58 @@ export default function EncounterScreen(props) {
           }
           pokemonBallAnimation.classList.remove("catching")
         }, randTime);
-      }, 920);
+      }, 925);
 
 
       setTimeout(() => {
           setThrowing(false);
           playerThrowing.classList.remove("throw");
-      }, randTime + 920 + 500);
+      }, randTime + 930 + 500);
     }
   }
 
-  const isCaught = () => {
-    const pokeballValue = selectedPokeball.pokeball.value
-    const levelAdjuster = ((pokemonLevel / 100) * maxLevelModifier) + 1
-    const attempt =  Math.floor(Math.random() * maxCatchChance)
-    console.log((attempt + pokeballValue) , (base_experience * maxLevelModifier))
-    return attempt + pokeballValue > base_experience * levelAdjuster
+  // Setting item
+
+  const [bagWindow, setBagWindow] = useState(false)
+  const [currentItemIndex, setCurrentItemIndex] = useState(0)
+
+  useEffect(() => {
+    if (bagWindow) {
+      const items = document.querySelectorAll(".inventory>.item")
+      // remove active
+      items.forEach(item => {
+        if(item.classList.contains("active")){
+          item.classList.remove("active")
+        }
+      })
+      // add active
+      items[currentItemIndex].classList.add("active")
+    }
+  }, [bagWindow, currentItemIndex])
+
+  const openBag = () => {
+    setBagWindow(true);
+  };
+
+  const navigateInventory = async (e) => {
+    if(bagWindow){
+      if(e.key == "ArrowDown"){
+        await setCurrentItemIndex(prev => prev + 1 > 5 ? 5 : prev + 1)
+      } else if (e.key == "ArrowUp") {
+        await setCurrentItemIndex(prev => prev - 1 < 0 ? 0 : prev - 1)
+      }
+    }
   }
+
+  console.log(currentItemIndex)
+
+  useEffect(() => {
+    document.addEventListener("keydown", navigateInventory)
+    return () => {
+      document.removeEventListener("keydown", navigateInventory)
+
+    };
+  },[bagWindow])
 
   //run logic
   const run = () => {
@@ -190,13 +245,38 @@ export default function EncounterScreen(props) {
 
   const clearEncounter = () =>{
     setEncounter(false)
-    setEncounteredPokemon("")
+    setEncounteredPokemon("");
+    setBagWindow(false)
   }
 
+  // styles
 
   const pokemonImageStyle = {
     backgroundImage : `url(${isShiny ? shinySprite.front : normalSprite.front})`
   }
+
+  const inventoryWindow = (
+    <div className="inventory d-flex flex-column">
+      {inventory[0].pokeballs.map(item  => {
+        return(
+          <div key={Object.keys(item)+"container"} className="pokeball-section item d-flex flex-column justify-content-center">
+            <div className="item-image" id={Object.keys(item)}></div>
+            <span className='d-flex justify-content-between'><h3 className='inventory-item'>{Object.keys(item)}</h3> <h3>x {item[Object.keys(item)].quantity}</h3></span>
+          </div>
+        )
+      })}
+      <div className="bag-split w-100"></div>
+      {inventory[1].baits.map(item  => {
+        return(
+          <div key={Object.keys(item)+"container"} className="bait-section item d-flex flex-column justify-content-center">
+            <div className="item-image" id={Object.keys(item)}></div>
+            <span className='d-flex justify-content-between'><h3 className='inventory-item'>{Object.keys(item)}</h3> <h3>x {item[Object.keys(item)].quantity}</h3></span>
+          </div>
+        )
+      })}
+    </div>
+  )
+
   return (
     <>
       <div id="encounter-screen" className='game d-flex'>
@@ -237,6 +317,9 @@ export default function EncounterScreen(props) {
               </div>
             </div>
           </div>
+          <div className="inventory-overlay w-100 d-flex justify-content-center align-items-center">
+            {bagWindow && inventoryWindow}
+          </div>
         </div>
         <div className="battle-interface row w-100 p-3">
           <div className="system-message rounded col-6 p-3 d-flex justify-content-left align-items-center">
@@ -244,8 +327,8 @@ export default function EncounterScreen(props) {
           </div>
           <div className="inferface-container col-6">
             <div className="button rounded" onClick={setThrow}>Capture</div>
-            <div className="button rounded">Items</div>
-            <div className="button rounded">Pokeball</div>
+            <div className="button rounded">Berry</div>
+            <div className="button rounded" onClick={openBag}>Bag</div>
             <div className="button rounded" onClick={run}>Run</div>
           </div>
         </div>
@@ -254,5 +337,5 @@ export default function EncounterScreen(props) {
   )
 }
 
-// now to add diffreent pokeballs and their effects
+// set running logic and animation
 // add lazy loading and a loading screen to make sure the images are loaded in before the user sees it

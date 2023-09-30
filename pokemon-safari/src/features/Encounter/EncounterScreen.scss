@@ -83,10 +83,8 @@
 
   #pokemonBallAnimation{
     position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
+    top: 50%;
+    left: 155px;
   }
 
   .ball-container{
@@ -120,7 +118,59 @@
   }
 }
 
-.catching::after{
+.inventory-overlay{
+  width: 100%;
+  height: 100%;
+
+  .pokeball-section, .bait-section{
+    padding: 5px;
+    transition: 0.5s ease-in-out;
+  }
+
+  .inventory{
+    width: 400px;
+    background: rgba(255,255,255,0.8);
+    padding: 30px;
+    border: 5px double black;
+    border-radius: 10px;
+  }
+
+  .inventory-item, .inventory-bar, .item-image, .bag-split{
+    padding: 0;
+    margin: 0;
+  }
+
+  .bag-split{
+    height: 3px;
+    border-top: 5px double black;
+
+  }
+
+  .inventory-bar{
+    height: 1px;
+    border: 1px solid rgba(0,0,0,0.2);
+  }
+
+  .pokeball-section:nth-child(4) .inventory-bar, .bait-section:last-child .inventory-bar{
+    display: none;
+  }
+
+  .active{
+    background: rgba($color: #000000, $alpha: 0.5);
+    color:white;
+  }
+
+  h3{
+    padding: 0;
+    margin: 0;
+    text-transform: capitalize;
+  }
+
+}
+
+
+
+.catching{
   content: "";
   position: absolute;
   top: 50%;
@@ -141,11 +191,9 @@ $pokeballTilt: 20deg;
   50% { transform: rotate($pokeballTilt); }
 }
 
-.catching-fail::after{
+.catching-fail{
   content: "";
   position: absolute;
-  top: 50%;
-  left: 155px;
   width: calc(200px / 3);
   height: 104px;
   background-size: 200px 104px;
@@ -159,7 +207,7 @@ $pokeballTilt: 20deg;
   50% { background-position: calc(-200px / 3 * 2) 0px; }
 }
 
-.catching-success::after{
+.catching-success{
   content: "";
   position: absolute;
   top: 50%;
