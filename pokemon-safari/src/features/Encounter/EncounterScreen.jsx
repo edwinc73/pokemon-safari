@@ -6,6 +6,9 @@ import "./EncounterScreen.scss"
 import CaughtPokemon from "../../js/Pokemon.js"
 
 
+let lastMoveTime = 0;
+const debounceTime = 250;
+
 const shinyChance = 5 // out of 100
 const runChance = 75 //out of 100
 const pokemonMinimumLevel = 20 // out of 100
@@ -54,6 +57,55 @@ export default function EncounterScreen(props) {
     front: sprites?.front_shiny,
     back: sprites?.back_shiny
   }
+
+  // system interface navigation
+
+  const [activeButtonIndex, setActiveButtonIndex] = useState(0)
+
+  useEffect(()=>{
+    if (encounteredPokemon) {
+      const interfaceButtons = document.querySelectorAll(".inferface-container")[0].childNodes;
+      interfaceButtons.forEach(button => {
+        button.classList.contains("active") && button.classList.remove("active");
+      });
+      interfaceButtons[activeButtonIndex].classList.add("active");
+    }
+  },[encounteredPokemon, activeButtonIndex])
+  console.log(activeButtonIndex)
+
+  const navigateInterface = async (e) => {
+    const currentTime = new Date().getTime();
+    if (currentTime - lastMoveTime < debounceTime){
+      return
+    } else {
+      if(encounteredPokemon && !bagWindow){
+        switch (e.key) {
+          case "ArrowUp":
+          setActiveButtonIndex(prev => (prev >= 2 && prev <= 3) ? prev - 2 : prev);
+          break;
+        case "ArrowDown":
+          setActiveButtonIndex(prev => (prev <= 2 && prev >= 0) ? prev + 2 : prev);
+          break;
+        case "ArrowLeft":
+          setActiveButtonIndex(prev => (prev % 2 > 0) ? prev - 1 : prev);
+          break;
+        case "ArrowRight":
+          setActiveButtonIndex(prev => (prev % 2 === 0) ? prev + 1 : prev);
+          break;
+        default:
+          break;
+        }
+      }
+    }
+    lastMoveTime = currentTime;
+  }
+
+  useEffect(()=>{
+    document.addEventListener("keydown", navigateInterface)
+    return () => {
+      document.removeEventListener("keydown", navigateInterface)
+    }
+  },[encounteredPokemon])
 
   //system messages
   const messages = {
@@ -224,8 +276,6 @@ export default function EncounterScreen(props) {
     }
   }
 
-  console.log(currentItemIndex)
-
   useEffect(() => {
     document.addEventListener("keydown", navigateInventory)
     return () => {
@@ -336,6 +386,8 @@ export default function EncounterScreen(props) {
     </>
   )
 }
+// set yes and no keys
 
 // set running logic and animation
+
 // add lazy loading and a loading screen to make sure the images are loaded in before the user sees it

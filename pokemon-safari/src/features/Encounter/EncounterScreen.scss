@@ -78,6 +78,11 @@
       align-items: center;
       font-size: 30px;
       font-weight: 700;
+      transition: 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+    .active{
+      background-color: red;
+      color: white;
     }
   }
 
@@ -124,7 +129,7 @@
 
   .pokeball-section, .bait-section{
     padding: 5px;
-    transition: 0.5s ease-in-out;
+    transition: 0.3s cubic-bezier(0.19, 1, 0.22, 1);
   }
 
   .inventory{
