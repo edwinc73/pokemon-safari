@@ -81,12 +81,24 @@ export default function EncounterScreen(props) {
     setBagWindow(true);
   };
 
+  const closeBag = () => {
+    setBagWindow(false);
+  };
+
   const navigateInventory = async (e) => {
     if(bagWindow){
-      if(e.key == "ArrowDown"){
-        await setCurrentItemIndex(prev => prev + 1 > 5 ? 5 : prev + 1)
-      } else if (e.key == "ArrowUp") {
-        await setCurrentItemIndex(prev => prev - 1 < 0 ? 0 : prev - 1)
+      switch (e.key) {
+        case "ArrowDown":
+          await setCurrentItemIndex(prev => prev + 1 > 5 ? 5 : prev + 1)
+        break;
+        case "ArrowUp":
+          await setCurrentItemIndex(prev => prev - 1 < 0 ? 0 : prev - 1)
+        break;
+        case "x":
+          await closeBag()
+          break;
+        default:
+          break;
       }
     }
   }
@@ -153,11 +165,8 @@ export default function EncounterScreen(props) {
                   break;
               }
             break;
-            case "x":
-            console.log("going back")
-            break;
             default:
-              break;
+            break;
           }
         }
         lastMoveTime = currentTime
@@ -398,17 +407,17 @@ export default function EncounterScreen(props) {
             {systemMessage}
           </div>
           <div className="inferface-container col-6">
-            <div className="button rounded" onClick={setThrow}>Capture</div>
+            <div className="button rounded">Capture</div>
             <div className="button rounded">Berry</div>
-            <div className="button rounded" onClick={openBag}>Bag</div>
-            <div className="button rounded" onClick={run}>Run</div>
+            <div className="button rounded">Bag</div>
+            <div className="button rounded">Run</div>
           </div>
         </div>
       </div>
     </>
   )
 }
-// set yes and no keys
+// code in cancel function
 
 // set running logic and animation
 

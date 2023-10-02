@@ -8,6 +8,7 @@ import {getPokemonData, randomPokemon} from "./js/encounter"
 import {mapCoord} from "./js/mapCoord.js"
 import EncounterScreen from "./features/Encounter/EncounterScreen"
 import { getEncounteredPokemon } from "../src/js/encounter.js";
+import Loading from "../src/features/Loading/Loading"
 
 
 function App() {
@@ -95,11 +96,17 @@ function App() {
   useEffect(()=>{
     const encounterScreenDOM = document.querySelector("#encounter-screen")
     if(encounter){
+      setLoading(true);
+
       const fetchData = async  () => {
-        setLoading(true); // Start loading
         const currentPokemon = await getEncounteredPokemon(randomPokemon(pokemonList))
-        setEncounteredPokemon(currentPokemon);
-        setLoading(false); // End loading
+        const image = new Image()
+        image.onload = () =>{
+          setEncounteredPokemon(currentPokemon);
+          setLoading(false);
+        }
+        image.src = currentPokemon.imageURL
+        await console.log(currentPokemon.imageURL)
       }
       fetchData();
       encounterScreenDOM.classList.add("fade-in");
@@ -159,6 +166,7 @@ function App() {
             inventory = {inventory}
             setInventory = {setInventory}
           />
+          {loading ? <Loading /> : ""}
         </div>
         <Key
           directionKeys = {directionKeys}
