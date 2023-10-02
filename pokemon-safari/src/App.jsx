@@ -122,6 +122,8 @@ function App() {
 
   const directionKeys = ["↑","←","↓","→"]
   const keyNames = ["ArrowUp","ArrowLeft", "ArrowDown", "ArrowRight"]
+  const actionKeys = ["z", "x"]
+
   const backgroundSize = {
     width: 1120 * 4,
     height: 608 * 4
@@ -159,9 +161,9 @@ function App() {
           />
         </div>
         <Key
-
           directionKeys = {directionKeys}
           keyNames = {keyNames}
+          actionKeys = {actionKeys}
         />
       </div>
     </>

@@ -1,7 +1,9 @@
 let lastMoveTime = 0;
 const debounceTime = 250;
 // const debounceTime = 50;
-const encounterChance = 10 // out of 100
+// const encounterChance = 10 // out of 100
+
+const encounterChance = 90 // out of 100
 
 export const handleMovement = (direction, setDirection, keyNames, collisionMap, grassMap, setEncounter, encounter) => e => {
   const currentTime = new Date().getTime();
@@ -102,7 +104,6 @@ export const handleMovement = (direction, setDirection, keyNames, collisionMap, 
         })
       }
       break;
-
     default:
       break;
   }

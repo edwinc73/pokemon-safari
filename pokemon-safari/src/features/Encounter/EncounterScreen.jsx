@@ -58,9 +58,54 @@ export default function EncounterScreen(props) {
     back: sprites?.back_shiny
   }
 
+  // Setting item
+
+  const [bagWindow, setBagWindow] = useState(false)
+  const [currentItemIndex, setCurrentItemIndex] = useState(0)
+
+  useEffect(() => {
+    if (bagWindow) {
+      const items = document.querySelectorAll(".inventory>.item")
+      // remove active
+      items.forEach(item => {
+        if(item.classList.contains("active")){
+          item.classList.remove("active")
+        }
+      })
+      // add active
+      items[currentItemIndex].classList.add("active")
+    }
+  }, [bagWindow, currentItemIndex])
+
+  const openBag = () => {
+    setBagWindow(true);
+  };
+
+  const navigateInventory = async (e) => {
+    if(bagWindow){
+      if(e.key == "ArrowDown"){
+        await setCurrentItemIndex(prev => prev + 1 > 5 ? 5 : prev + 1)
+      } else if (e.key == "ArrowUp") {
+        await setCurrentItemIndex(prev => prev - 1 < 0 ? 0 : prev - 1)
+      }
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener("keydown", navigateInventory)
+    return () => {
+      document.removeEventListener("keydown", navigateInventory)
+
+    };
+  },[bagWindow])
+
   // system interface navigation
 
   const [activeButtonIndex, setActiveButtonIndex] = useState(0)
+
+  useEffect(()=> {
+    setActiveButtonIndex(0)
+  },[encounteredPokemon])
 
   useEffect(()=>{
     if (encounteredPokemon) {
@@ -71,41 +116,59 @@ export default function EncounterScreen(props) {
       interfaceButtons[activeButtonIndex].classList.add("active");
     }
   },[encounteredPokemon, activeButtonIndex])
-  console.log(activeButtonIndex)
 
-  const navigateInterface = async (e) => {
-    const currentTime = new Date().getTime();
-    if (currentTime - lastMoveTime < debounceTime){
-      return
-    } else {
-      if(encounteredPokemon && !bagWindow){
-        switch (e.key) {
-          case "ArrowUp":
-          setActiveButtonIndex(prev => (prev >= 2 && prev <= 3) ? prev - 2 : prev);
-          break;
-        case "ArrowDown":
-          setActiveButtonIndex(prev => (prev <= 2 && prev >= 0) ? prev + 2 : prev);
-          break;
-        case "ArrowLeft":
-          setActiveButtonIndex(prev => (prev % 2 > 0) ? prev - 1 : prev);
-          break;
-        case "ArrowRight":
-          setActiveButtonIndex(prev => (prev % 2 === 0) ? prev + 1 : prev);
-          break;
-        default:
-          break;
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      const currentTime = new Date().getTime();
+      if (currentTime - lastMoveTime < debounceTime) {
+        return;
+      } else {
+        if (encounteredPokemon && !bagWindow) {
+          switch (e.key) {
+            case "ArrowUp":
+              setActiveButtonIndex(prev => (prev >= 2 && prev <= 3) ? prev - 2 : prev);
+            break;
+            case "ArrowDown":
+              setActiveButtonIndex(prev => (prev <= 2 && prev >= 0) ? prev + 2 : prev);
+            break;
+            case "ArrowLeft":
+              setActiveButtonIndex(prev => (prev % 2 > 0) ? prev - 1 : prev);
+            break;
+            case "ArrowRight":
+              setActiveButtonIndex(prev => (prev % 2 === 0) ? prev + 1 : prev);
+            break;
+            case "z":
+              switch (activeButtonIndex) {
+                case 0:
+                  setThrow()
+                  break;
+                case 1:
+                  console.log("use berry")
+                  break;
+                case 2:
+                  openBag()
+                  break;
+                case 3:
+                  run()
+                  break;
+              }
+            break;
+            case "x":
+            console.log("going back")
+            break;
+            default:
+              break;
+          }
         }
+        lastMoveTime = currentTime
       }
-    }
-    lastMoveTime = currentTime;
-  }
+    };
 
-  useEffect(()=>{
-    document.addEventListener("keydown", navigateInterface)
+    document.addEventListener("keydown", handleKeyDown);
     return () => {
-      document.removeEventListener("keydown", navigateInterface)
-    }
-  },[encounteredPokemon])
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [encounteredPokemon, bagWindow, lastMoveTime]);
 
   //system messages
   const messages = {
@@ -242,47 +305,6 @@ export default function EncounterScreen(props) {
       }, randTime + 930 + 500);
     }
   }
-
-  // Setting item
-
-  const [bagWindow, setBagWindow] = useState(false)
-  const [currentItemIndex, setCurrentItemIndex] = useState(0)
-
-  useEffect(() => {
-    if (bagWindow) {
-      const items = document.querySelectorAll(".inventory>.item")
-      // remove active
-      items.forEach(item => {
-        if(item.classList.contains("active")){
-          item.classList.remove("active")
-        }
-      })
-      // add active
-      items[currentItemIndex].classList.add("active")
-    }
-  }, [bagWindow, currentItemIndex])
-
-  const openBag = () => {
-    setBagWindow(true);
-  };
-
-  const navigateInventory = async (e) => {
-    if(bagWindow){
-      if(e.key == "ArrowDown"){
-        await setCurrentItemIndex(prev => prev + 1 > 5 ? 5 : prev + 1)
-      } else if (e.key == "ArrowUp") {
-        await setCurrentItemIndex(prev => prev - 1 < 0 ? 0 : prev - 1)
-      }
-    }
-  }
-
-  useEffect(() => {
-    document.addEventListener("keydown", navigateInventory)
-    return () => {
-      document.removeEventListener("keydown", navigateInventory)
-
-    };
-  },[bagWindow])
 
   //run logic
   const run = () => {
