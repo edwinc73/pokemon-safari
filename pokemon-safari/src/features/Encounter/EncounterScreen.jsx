@@ -20,7 +20,7 @@ const maxLevelModifier = 0.5 // out of 1 (50% difference)
 export default function EncounterScreen(props) {
 
   // deconstruct object
-  const { encounteredPokemon, setEncounter, setEncounteredPokemon, setCaughtPokemonList, inventory, setInventory} = props
+  const { encounteredPokemon, setEncounter, setEncounteredPokemon, setCaughtPokemonList, inventory, setInventory, setLoading} = props
   const {name, sprites, types, weight} = encounteredPokemon
   let base_experience = encounteredPokemon.base_experience || 255
 
@@ -43,9 +43,24 @@ export default function EncounterScreen(props) {
 
   //shiny logic
   const [isShiny , setIsShiny] = useState(Math.floor(Math.random() * 100) < shinyChance )
+
   useEffect(() => {
     setIsShiny(Math.floor(Math.random() * 100) < shinyChance)
     setCaught(false)
+
+    // check if image has been loaded
+    if(encounteredPokemon){
+      const image = new Image
+      image.src = isShiny ? shinySprite.front : normalSprite.front
+
+      image.onload = ()=> {
+        setTimeout(() => {
+          setLoading(false)
+          const loadingScreen = document.querySelector(".loading")
+          loadingScreen.classList.remove("loading-fade-in")
+        }, 2000);
+        }
+    }
   }, [encounteredPokemon])
 
   const normalSprite = {
@@ -410,14 +425,17 @@ export default function EncounterScreen(props) {
             <div className="button rounded">Capture</div>
             <div className="button rounded">Berry</div>
             <div className="button rounded">Bag</div>
-            <div className="button rounded">Run</div>
+            <div className="button rounded" onClick={run}>Run</div>
           </div>
         </div>
       </div>
     </>
   )
 }
-// code in cancel function
+
+// fix fetch and loading
+
+// check the sprite image has been loaded then set loading state
 
 // set running logic and animation
 

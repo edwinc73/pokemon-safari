@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 let lastMoveTime = 0;
 const debounceTime = 250;
 // const debounceTime = 50;
@@ -37,13 +39,23 @@ export const handleMovement = (direction, setDirection, keyNames, collisionMap, 
     }, 1000);
   }
 
-  const encounterPokemon = ()=>{
+  const encounterPokemon = async ()=>{
     if(grassMap[currentCoord.y][currentCoord.x] != 0){
       if((Math.random() * 100) < encounterChance){
-        setEncounter(true)
+        await setEncounter(true)
       }
     }
   }
+
+  // useEffect(()=>{
+  //   if(grassMap[currentCoord.y][currentCoord.x] != 0){
+  //     if((Math.random() * 100) < encounterChance){
+  //       setEncounter(true)
+  //     }
+  //   }
+  // }, [direction])
+
+  // console.log(encounter)
 
   // movement logic
   switch (e.key) {

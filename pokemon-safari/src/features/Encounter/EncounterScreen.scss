@@ -173,6 +173,9 @@
 
 }
 
+.fade-in{
+  animation: flashingFadeIn 2s forwards;
+}
 
 
 .catching{
@@ -228,10 +231,6 @@ $pokeballTilt: 20deg;
 @keyframes catchingSuccess{
   0%, 100% { background-position: -0px 0px; }
   50% { background-position: -62px 0px; }
-}
-
-.fade-in{
-  animation: flashingFadeIn 2s forwards;
 }
 
 @keyframes flashingFadeIn {

@@ -70,6 +70,7 @@ function App() {
     {etc:[]}
   ])
 
+
   // caught pokemon
   const [caughtPokemonList, setCaughtPokemonList] = useState([])
 
@@ -81,6 +82,24 @@ function App() {
     }
     fetchData();
   },[])
+
+  // loading pokemon in encounter screen
+
+  useEffect(() => {
+    if(encounter){
+      setLoading(true)
+    }
+  }, [encounter, encounteredPokemon])
+
+  // loading screen fade in
+
+  useEffect(()=> {
+    if(encounter){
+      const loadingScreen = document.querySelector(".loading")
+      loadingScreen.classList.add("loading-fade-in")
+    }
+  }, [encounter])
+
 
   // movement logic
   useEffect(()=>{
@@ -96,20 +115,15 @@ function App() {
   useEffect(()=>{
     const encounterScreenDOM = document.querySelector("#encounter-screen")
     if(encounter){
-      setLoading(true);
-
       const fetchData = async  () => {
         const currentPokemon = await getEncounteredPokemon(randomPokemon(pokemonList))
-        const image = new Image()
-        image.onload = () =>{
-          setEncounteredPokemon(currentPokemon);
-          setLoading(false);
-        }
-        image.src = currentPokemon.imageURL
-        await console.log(currentPokemon.imageURL)
+        setEncounteredPokemon(currentPokemon)
       }
+
       fetchData();
-      encounterScreenDOM.classList.add("fade-in");
+      setTimeout(() => {
+        encounterScreenDOM.classList.add("fade-in");
+      }, 500);
     } else {
       if(encounterScreenDOM.classList.contains("fade-in")){
         encounterScreenDOM.classList.remove("fade-in");
@@ -143,8 +157,19 @@ function App() {
     height: ` ${backgroundSize.height}px`
   }
 
+  useEffect(()=>{
+    const gameScreen = document.querySelector(".game")
+    if(encounter){
+      setTimeout(() => {
+        gameScreen.classList.add("fade-out")
+      }, 2000);
+    } else {
+      gameScreen.classList.remove("fade-out")
+    }
+  },[encounter])
+
   const safariMap = (
-  <div className={encounter ? "fade-out game d-flex" : "game d-flex"}>
+  <div className="game d-flex">
     <img src="/bg-map.png" id="game-backdrop"alt="" />
     <div className="game-window p-5" style={backgroundStyle}>
       <img src="/game-map.png" alt="" />
@@ -165,8 +190,11 @@ function App() {
             setCaughtPokemonList = {setCaughtPokemonList}
             inventory = {inventory}
             setInventory = {setInventory}
+            setLoading = {setLoading}
           />
-          {loading ? <Loading /> : ""}
+          <Loading
+            encounter = {encounter}
+          />
         </div>
         <Key
           directionKeys = {directionKeys}
