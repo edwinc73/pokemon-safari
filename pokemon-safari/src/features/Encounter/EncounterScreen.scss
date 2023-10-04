@@ -80,6 +80,25 @@
       font-weight: 700;
       transition: 0.3s cubic-bezier(0.19, 1, 0.22, 1);
     }
+
+    h2{
+      font-weight: 700;
+      padding: 0;
+      margin: 0;
+    }
+
+    .interface-pokeball-image{
+      width: 42px;
+      height: 42px;
+      background-size: cover;
+      margin: -10px 10px 0 0;
+    }
+
+    .interface-image-large{
+      width: 60px;
+      height: 60px;
+    }
+
     .active{
       background-color: red;
       color: white;
@@ -121,6 +140,7 @@
     width: 30px;
     height: 30px;
   }
+
 }
 
 .inventory-overlay{
@@ -170,7 +190,6 @@
     margin: 0;
     text-transform: capitalize;
   }
-
 }
 
 .fade-in{

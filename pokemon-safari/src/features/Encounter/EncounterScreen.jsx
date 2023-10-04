@@ -32,6 +32,7 @@ export default function EncounterScreen(props) {
   // setting the default bait
   const [currentBait, setCurrentBait] = useState(defaultBait)
   let selectedBait = inventory[1].baits.find(element => defaultBait)
+  const [useBerry, setUseBerry] = useState(false)
 
   useEffect(()=> {
     setCurrentPokeball(defaultPokeBall)
@@ -110,50 +111,47 @@ export default function EncounterScreen(props) {
     setBagWindow(false);
   };
 
-  console.log(currentBait)
-  console.log(currentPokeball)
-
-
-  const navigateInventory = async (e) => {
-    const pokeballs = inventory[0].pokeballs
-    const baits = inventory[1].baits
-    if(bagWindow){
-      switch (e.key) {
-        case "ArrowDown":
-          await setCurrentItemIndex(prev => prev + 1 > 5 ? 5 : prev + 1)
-        break;
-        case "ArrowUp":
-          await setCurrentItemIndex(prev => prev - 1 < 0 ? 0 : prev - 1)
-        break;
-        case "x":
-          await closeBag()
-        break;
-        case "z":
-          if(currentItemIndex < 3){
-            await setCurrentPokeball(Object.keys(pokeballs[currentItemIndex])[0])
-            await closeBag()
-          } else {
-            if(currentItemIndex == 4){
-              await setCurrentBait(Object.keys(baits[0])[0])
-            } else {
-              await setCurrentBait(Object.keys(baits[1])[0])
-            }
-            await closeBag()
-          }
+  useEffect(() => {
+    const navigateInventory = async (e) => {
+      const pokeballs = inventory[0].pokeballs
+      const baits = inventory[1].baits
+      if(bagWindow){
+        switch (e.key) {
+          case "ArrowDown":
+            await setCurrentItemIndex(prev => prev + 1 > 5 ? 5 : prev + 1)
           break;
-        default:
-        break;
+          case "ArrowUp":
+            await setCurrentItemIndex(prev => prev - 1 < 0 ? 0 : prev - 1)
+          break;
+          case "x":
+            await closeBag()
+          break;
+          case "z":
+            console.log(currentItemIndex)
+            if(currentItemIndex < 3){
+              await setCurrentPokeball(Object.keys(pokeballs[currentItemIndex])[0])
+              await closeBag()
+            } else {
+              if(currentItemIndex == 4){
+                await setCurrentBait(Object.keys(baits[0])[0])
+              } else {
+                await setCurrentBait(Object.keys(baits[1])[0])
+              }
+              await closeBag()
+            }
+            break;
+          default:
+          break;
+        }
       }
     }
-  }
 
-  useEffect(() => {
     document.addEventListener("keydown", navigateInventory)
     return () => {
       document.removeEventListener("keydown", navigateInventory)
 
     };
-  },[bagWindow])
+  },[bagWindow, inventory, currentItemIndex, setCurrentItemIndex, setCurrentPokeball, setCurrentBait, closeBag])
 
   // system interface navigation
 
@@ -197,16 +195,16 @@ export default function EncounterScreen(props) {
               switch (activeButtonIndex) {
                 case 0:
                   setThrow()
-                  break;
+                break;
                 case 1:
-                  console.log("use berry")
-                  break;
+                  setUseBerry(prev => !prev)
+                break;
                 case 2:
                   openBag()
-                  break;
+                break;
                 case 3:
                   run()
-                  break;
+                break;
               }
             break;
             default:
@@ -402,6 +400,24 @@ export default function EncounterScreen(props) {
     </div>
   )
 
+  const [berryStyle, setBerryStyle] = useState(`/berry/RazzBerry.png`)
+  const [pokeballStyle, setPokeBallStyle] = useState("/pokeballs/pokeball/idle.png")
+
+  useEffect(()=>{
+    const setStyle = async () => {
+      if(currentBait == "berry"){
+        await setBerryStyle("/berry/RazzBerry.png")
+      } else if (currentBait == "banana"){
+        await setBerryStyle("/berry/NanabBerry.png")
+      }
+
+      await setPokeBallStyle(`/pokeballs/${currentPokeball}/idle.png`)
+    }
+
+    setStyle()
+  }, [currentBait, currentPokeball])
+
+  console.log(currentPokeball)
   return (
     <>
       <div id="encounter-screen" className='game d-flex'>
@@ -451,10 +467,10 @@ export default function EncounterScreen(props) {
             {systemMessage}
           </div>
           <div className="inferface-container col-6">
-            <div className="button rounded">Capture</div>
-            <div className="button rounded">Berry</div>
-            <div className="button rounded">Bag</div>
-            <div className="button rounded" onClick={run}>Run</div>
+            <div className="button rounded"><img className="interface-pokeball-image" src={`/pokeballs/${currentPokeball}/idle.png`} /><h2>Capture</h2></div>
+            <div className="button rounded"><img className="interface-pokeball-image" src={berryStyle} /><h2>Berry</h2></div>
+            <div className="button rounded"><img className="interface-pokeball-image interface-image-large" src="/bag.png" /><h2>Bag</h2></div>
+            <div className="button rounded" onClick={run}><img className="interface-pokeball-image" src="/run.png" /><h2>Run</h2></div>
           </div>
         </div>
       </div>
