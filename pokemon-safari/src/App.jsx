@@ -191,6 +191,7 @@ function App() {
             inventory = {inventory}
             setInventory = {setInventory}
             setLoading = {setLoading}
+            loading = {loading}
           />
           <Loading
             encounter = {encounter}
