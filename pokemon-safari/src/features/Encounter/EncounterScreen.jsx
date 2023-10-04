@@ -15,6 +15,7 @@ const pokemonMinimumLevel = 20 // out of 100
 const maxCatchChance = 400 // max chances
 // const maxCatchChance = 1 // test max chance
 const defaultPokeBall = "pokeball"
+const defaultBait  = "berry"
 
 const maxLevelModifier = 0.5 // out of 1 (50% difference)
 export default function EncounterScreen(props) {
@@ -28,6 +29,10 @@ export default function EncounterScreen(props) {
   const [currentPokeball, setCurrentPokeball] = useState(defaultPokeBall)
   let selectedPokeball = inventory[0].pokeballs.find(element => defaultPokeBall)
 
+  // setting the default bait
+  const [currentBait, setCurrentBait] = useState(defaultBait)
+  let selectedBait = inventory[1].baits.find(element => defaultBait)
+
   useEffect(()=> {
     setCurrentPokeball(defaultPokeBall)
   },[encounteredPokemon])
@@ -35,6 +40,10 @@ export default function EncounterScreen(props) {
   useEffect(() => {
     selectedPokeball = inventory[0].pokeballs.find(element => currentPokeball)
   }, [currentPokeball])
+
+  useEffect(() => {
+    selectedBait = inventory[1].baits.find(element => currentBait)
+  }, [currentBait])
 
   //pokemon logic
 
@@ -78,6 +87,7 @@ export default function EncounterScreen(props) {
   const [bagWindow, setBagWindow] = useState(false)
   const [currentItemIndex, setCurrentItemIndex] = useState(0)
 
+
   useEffect(() => {
     if (bagWindow) {
       const items = document.querySelectorAll(".inventory>.item")
@@ -100,7 +110,13 @@ export default function EncounterScreen(props) {
     setBagWindow(false);
   };
 
+  console.log(currentBait)
+  console.log(currentPokeball)
+
+
   const navigateInventory = async (e) => {
+    const pokeballs = inventory[0].pokeballs
+    const baits = inventory[1].baits
     if(bagWindow){
       switch (e.key) {
         case "ArrowDown":
@@ -111,9 +127,22 @@ export default function EncounterScreen(props) {
         break;
         case "x":
           await closeBag()
+        break;
+        case "z":
+          if(currentItemIndex < 3){
+            await setCurrentPokeball(Object.keys(pokeballs[currentItemIndex])[0])
+            await closeBag()
+          } else {
+            if(currentItemIndex == 4){
+              await setCurrentBait(Object.keys(baits[0])[0])
+            } else {
+              await setCurrentBait(Object.keys(baits[1])[0])
+            }
+            await closeBag()
+          }
           break;
         default:
-          break;
+        break;
       }
     }
   }
@@ -432,10 +461,6 @@ export default function EncounterScreen(props) {
     </>
   )
 }
-
-// fix fetch and loading
-
-// check the sprite image has been loaded then set loading state
 
 // set running logic and animation
 
