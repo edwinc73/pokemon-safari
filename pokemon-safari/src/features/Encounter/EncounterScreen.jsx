@@ -12,8 +12,8 @@ const debounceTime = 250;
 const shinyChance = 5 // out of 100
 const runChance = 75 //out of 100
 const pokemonMinimumLevel = 20 // out of 100
-const maxCatchChance = 400 // max chances
-// const maxCatchChance = 1 // test max chance
+// const maxCatchChance = 400 // max chances
+const maxCatchChance = 1 // test max chance
 const defaultPokeBall = "pokeball"
 const defaultBait  = "berry"
 
@@ -171,7 +171,7 @@ export default function EncounterScreen(props) {
               setActiveButtonIndex(prev => (prev >= 2 && prev <= 3) ? prev - 2 : prev);
             break;
             case "ArrowDown":
-              setActiveButtonIndex(prev => (prev <= 2 && prev >= 0) ? prev + 2 : prev);
+              setActiveButtonIndex(prev => (prev < 2 && prev >= 0) ? prev + 2 : prev);
             break;
             case "ArrowLeft":
               setActiveButtonIndex(prev => (prev % 2 > 0) ? prev - 1 : prev);
@@ -185,7 +185,7 @@ export default function EncounterScreen(props) {
                   setThrow()
                 break;
                 case 1:
-                  setUseBerry(prev => !prev)
+                  currentBait ? setUseBerry(true) : alert("Please select berry")
                 break;
                 case 2:
                   openBag()
@@ -302,7 +302,6 @@ export default function EncounterScreen(props) {
 
       setTimeout(() => {
         if(wasCaught){
-          setUseBerry(false)
           setTimeout(()=>{
             const caughtPokemon = new CaughtPokemon(nanoid(), pokemonName, isShiny ? shinySprite.front : normalSprite.front, pokemonLevel, isShiny);
             setCaughtPokemonList(prevState => [...prevState, caughtPokemon]);
@@ -313,7 +312,6 @@ export default function EncounterScreen(props) {
             }, 3000);
           }, randTime)
         } else {
-            setUseBerry(false)
             setSystemMessage(messages.failed);
             setTimeout(() => {
                 setSystemMessage(messages.default);
@@ -344,6 +342,7 @@ export default function EncounterScreen(props) {
       setTimeout(() => {
           setThrowing(false);
           playerThrowing.classList.remove("throw");
+          setUseBerry(false)
       }, randTime + 930 + 500);
     }
   }
@@ -362,6 +361,26 @@ export default function EncounterScreen(props) {
     }
   }, [currentBait, throwing])
 
+  //use Berry
+
+  useEffect(()=>{
+    const nameTag = document.querySelector(".wild-pokemon>.name-tag")
+    if(useBerry){
+      const image = new Image
+      image.src = berryImage
+      image.id = "pokemon-img"
+      image.style.width = "42px"
+      image.style.height = "42px"
+      nameTag.appendChild(image)
+    } else {
+      console.log("Remove")
+      const domImage = document.querySelector(".wild-pokemon #pokemon-img")
+      if(nameTag.contains(domImage)){
+        nameTag.removeChild(domImage)
+      }
+    }
+  }, [useBerry])
+
   //run logic
   const run = () => {
     if(runChance > Math.floor(Math.random() * 100)){
@@ -375,6 +394,8 @@ export default function EncounterScreen(props) {
     setEncounter(false)
     setEncounteredPokemon("");
     setBagWindow(false)
+    setBerry(false)
+    setBerryImage("/berry/RazzBerry.png")
   }
 
   // styles
@@ -433,7 +454,7 @@ export default function EncounterScreen(props) {
               <div id="pokemonBallAnimation" className=''> </div>
               <div className='pokemonImageShadow'></div>
             </div>
-            <div className="name-tag rounded p-1">
+            <div className="name-tag rounded p-1 d-flex">
               <div className="name">
                 {pokemonName} Lv{pokemonLevel}
                 {isShiny && <span><img src="./sparkle.svg" className="shiny-icon" alt="" /></span>}
