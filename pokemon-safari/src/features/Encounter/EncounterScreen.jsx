@@ -25,11 +25,22 @@ export default function EncounterScreen(props) {
   const {name, sprites, types, weight} = encounteredPokemon
   let base_experience = encounteredPokemon.base_experience || 255
 
+  // check inventory
+
+  const hasItem = (type,str) => {
+    // e.g hasItem("baits"/"pokeballs", "berry")
+    const item = inventory[type == "baits" ? 1 : 0][type].find(element => {
+      console.log(element)
+      return Object.keys(element)[0] == str})
+      console.log(item)
+    return item[str].quantity > 0
+  }
+
   // setting the default pokeball
   const [currentPokeball, setCurrentPokeball] = useState(defaultPokeBall)
 
   // setting the default bait
-  const [currentBait, setCurrentBait] = useState("")
+  const [currentBait, setCurrentBait] = useState("berry")
 
   useEffect(()=> {
     setCurrentPokeball(currentPokeball)
@@ -185,7 +196,15 @@ export default function EncounterScreen(props) {
                   setThrow()
                 break;
                 case 1:
-                  currentBait ? setUseBerry(true) : alert("Please select berry")
+                  const hasBait = hasItem("baits", currentBait)
+
+                  if(currentBait && hasBait){
+                    setUseBerry(true)
+                  } else if(!currentBait) {
+                    alert("Please select berry")
+                  } else if (!hasBait){
+                    alert("No more berries!")
+                  }
                 break;
                 case 2:
                   openBag()
@@ -257,6 +276,9 @@ export default function EncounterScreen(props) {
   const setThrow = async () => {
     const selectedPokeball = inventory[0].pokeballs.find(element => Object.keys(element) == currentPokeball)[currentPokeball]
 
+    // check if inventory has pokeball
+    const hasPokeball = hasItem("pokeballs", currentPokeball)
+
     const pokemonImage = document.querySelector("#pokemonImage")
 
     const setPokeBallImage =  (element, action) => {
@@ -264,7 +286,7 @@ export default function EncounterScreen(props) {
       element.style.backgroundImage = `url("/pokeballs/${currentPokeball}/${action ? action[0].toUpperCase() + action.slice(1) : "Catching"}.png")`
     }
 
-    if(!throwing && !caught && selectedPokeball.quantity > 0){
+    if(!throwing && !caught && hasPokeball){
       setThrowing(true)
       const playerThrowing = document.querySelector("#player-throwing")
       const ballContainer = document.querySelector(".ball-container")
@@ -373,7 +395,6 @@ export default function EncounterScreen(props) {
       image.style.height = "42px"
       nameTag.appendChild(image)
     } else {
-      console.log("Remove")
       const domImage = document.querySelector(".wild-pokemon #pokemon-img")
       if(nameTag.contains(domImage)){
         nameTag.removeChild(domImage)
@@ -441,7 +462,7 @@ export default function EncounterScreen(props) {
   }, [currentBait, currentPokeball])
 
   const berryStyle = {
-    opacity: currentBait ? 1 : 0.2
+    opacity: useBerry ? 1 : 0.2
   }
 
   return (
