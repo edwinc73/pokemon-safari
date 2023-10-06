@@ -126,7 +126,6 @@ export default function EncounterScreen(props) {
   const [bagWindow, setBagWindow] = useState(false)
   const [currentItemIndex, setCurrentItemIndex] = useState(0)
 
-
   useEffect(() => {
     if (bagWindow) {
       const items = document.querySelectorAll(".inventory>.item")
@@ -258,9 +257,9 @@ export default function EncounterScreen(props) {
       }
     };
 
-    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keyup", handleKeyDown);
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keyup", handleKeyDown);
     };
   }, [encounteredPokemon, bagWindow, lastMoveTime]);
 
@@ -309,8 +308,16 @@ export default function EncounterScreen(props) {
   }
 
   // catching
+
   const setThrow = async () => {
     // check if inventory has pokeball
+    if(!throwing && !caught && hasItem(currentPokeball)){
+      await setThrowing(true)
+      await updateInventory(currentPokeball, "pokeballs", "remove")
+    }
+  }
+
+  useEffect(() => {
     const pokemonImage = document.querySelector("#pokemonImage")
     const pokeballName = currentPokeball.name
 
@@ -318,9 +325,7 @@ export default function EncounterScreen(props) {
       element.classList.add(`catching${action ? "-"+action : ""}`)
       element.style.backgroundImage = `url("/pokeballs/${pokeballName}/${action ? action[0].toUpperCase() + action.slice(1) : "Catching"}.png")`
     }
-
-    if(!throwing && !caught && hasItem(currentPokeball)){
-      setThrowing(true)
+    if(throwing){
       const playerThrowing = document.querySelector("#player-throwing")
       const ballContainer = document.querySelector(".ball-container")
       const pokemonBallAnimation = document.querySelector("#pokemonBallAnimation")
@@ -331,7 +336,7 @@ export default function EncounterScreen(props) {
       ballContainer.classList.add("ball-animation")
       ballContainer.style.backgroundImage = `url("/pokeballs/${pokeballName}/Throwing.png")`
 
-      const wasCaught = await isCaught();
+      const wasCaught = isCaught();
       setCaught(wasCaught);
 
       const maxCatchingTime = 2000 + 2000/3
@@ -398,11 +403,10 @@ export default function EncounterScreen(props) {
           setThrowing(false);
           playerThrowing.classList.remove("throw");
           setUseBerry(false)
-      }, randTime + 930 + 500);
-
-      updateInventory(currentPokeball, "pokeballs", "remove")
+      }, randTime + 930 + 500 + 2000);
     }
-  }
+  }, [throwing])
+
 
   // using berry
 
@@ -581,10 +585,6 @@ export default function EncounterScreen(props) {
     </>
   )
 }
-
-// code berry logic
-
-// once used, the item should be remvoed from the inventory
 
 // set running logic and animation
 
