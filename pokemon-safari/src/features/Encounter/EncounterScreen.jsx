@@ -14,8 +14,17 @@ const runChance = 75 //out of 100
 const pokemonMinimumLevel = 20 // out of 100
 // const maxCatchChance = 400 // max chances
 const maxCatchChance = 1 // test max chance
-const defaultPokeBall = "pokeball"
-const defaultBait  = "berry"
+const defaultPokeBall = {
+    name: "pokeball",
+    quantity: 10,
+    value: 0,
+    rarity: 1
+}
+const defaultBait  = {
+  name: "berry",
+  quantity : 5,
+  value: 5
+}
 
 const maxLevelModifier = 0.5 // out of 1 (50% difference)
 export default function EncounterScreen(props) {
@@ -27,23 +36,52 @@ export default function EncounterScreen(props) {
 
   // check inventory
 
-  const hasItem = (type,str) => {
-    // e.g hasItem("baits"/"pokeballs", "berry")
-    const item = inventory[type == "baits" ? 1 : 0][type].find(element => {
-      console.log(element)
-      return Object.keys(element)[0] == str})
-      console.log(item)
-    return item[str].quantity > 0
+  const hasItem = item => item.quantity > 0
+
+  //update Inventory
+
+  const updateInventory = (item, type,action) => {
+      setInventory(prev => ({
+        ...prev,
+        [type]: {
+          ...prev[type],
+          [item.name]: {
+            ...prev[type][item.name],
+            quantity: action == "add" ? prev[type][item.name].quantity + 1 : prev[type][item.name].quantity - 1
+          }
+        }
+      }))
   }
+
+  //update currentpokeball and current berry if used.
+
+  useEffect(()=>{
+    const baits = Object.keys(inventory.baits)
+    const pokeballs = Object.keys(inventory.pokeballs)
+
+    baits.forEach(name =>{
+      const bait = inventory.baits[name]
+      if(bait.name == currentBait.name){
+        bait.quantity != currentBait.quantity && setCurrentBait(bait)
+      }
+    })
+
+    pokeballs.forEach(name =>{
+      const pokeball = inventory.pokeballs[name]
+      if(pokeball.name == currentPokeball.name){
+        pokeball.quantity != currentPokeball.quantity && setCurrentPokeball(pokeball)
+      }
+    })
+  }, [inventory])
 
   // setting the default pokeball
   const [currentPokeball, setCurrentPokeball] = useState(defaultPokeBall)
 
   // setting the default bait
-  const [currentBait, setCurrentBait] = useState("berry")
+  const [currentBait, setCurrentBait] = useState(defaultBait)
 
   useEffect(()=> {
-    setCurrentPokeball(currentPokeball)
+    setCurrentPokeball(defaultPokeBall)
   },[encounteredPokemon])
 
   //pokemon logic
@@ -113,8 +151,8 @@ export default function EncounterScreen(props) {
 
   useEffect(() => {
     const navigateInventory = async (e) => {
-      const pokeballs = inventory[0].pokeballs
-      const baits = inventory[1].baits
+      const pokeballs = Object.keys(inventory.pokeballs)
+      const baits = inventory.baits
       if(bagWindow){
         switch (e.key) {
           case "ArrowDown":
@@ -128,13 +166,13 @@ export default function EncounterScreen(props) {
           break;
           case "z":
             if(currentItemIndex < 3){
-              await setCurrentPokeball(Object.keys(pokeballs[currentItemIndex])[0])
+              await setCurrentPokeball(inventory.pokeballs[pokeballs[currentItemIndex]])
               await closeBag()
             } else {
               if(currentItemIndex == 4){
-                await setCurrentBait(Object.keys(baits[0])[0])
+                await setCurrentBait(baits.berry)
               } else {
-                await setCurrentBait(Object.keys(baits[1])[0])
+                await setCurrentBait(baits.banana)
               }
               await closeBag()
             }
@@ -150,7 +188,7 @@ export default function EncounterScreen(props) {
       document.removeEventListener("keydown", navigateInventory)
 
     };
-  },[bagWindow, inventory, currentItemIndex, setCurrentItemIndex, setCurrentPokeball, setCurrentBait, closeBag])
+  },[bagWindow, inventory, currentItemIndex, closeBag])
 
   // system interface navigation
 
@@ -196,13 +234,11 @@ export default function EncounterScreen(props) {
                   setThrow()
                 break;
                 case 1:
-                  const hasBait = hasItem("baits", currentBait)
-
-                  if(currentBait && hasBait){
+                  if(currentBait && hasItem(currentBait)){
                     setUseBerry(true)
                   } else if(!currentBait) {
                     alert("Please select berry")
-                  } else if (!hasBait){
+                  } else if (!hasItem(currentBait)){
                     alert("No more berries!")
                   }
                 break;
@@ -254,7 +290,7 @@ export default function EncounterScreen(props) {
   }, [encounteredPokemon])
 
   const isCaught = () => {
-    const pokeballValue = inventory[0].pokeballs.find(element => currentPokeball).pokeball.value
+    const pokeballValue = currentPokeball.value
     const levelAdjuster = ((pokemonLevel / 100) * maxLevelModifier) + 1
     const attempt =  Math.floor(Math.random() * maxCatchChance)
     return attempt + pokeballValue > base_experience * levelAdjuster
@@ -274,19 +310,16 @@ export default function EncounterScreen(props) {
 
   // catching
   const setThrow = async () => {
-    const selectedPokeball = inventory[0].pokeballs.find(element => Object.keys(element) == currentPokeball)[currentPokeball]
-
     // check if inventory has pokeball
-    const hasPokeball = hasItem("pokeballs", currentPokeball)
-
     const pokemonImage = document.querySelector("#pokemonImage")
+    const pokeballName = currentPokeball.name
 
     const setPokeBallImage =  (element, action) => {
       element.classList.add(`catching${action ? "-"+action : ""}`)
-      element.style.backgroundImage = `url("/pokeballs/${currentPokeball}/${action ? action[0].toUpperCase() + action.slice(1) : "Catching"}.png")`
+      element.style.backgroundImage = `url("/pokeballs/${pokeballName}/${action ? action[0].toUpperCase() + action.slice(1) : "Catching"}.png")`
     }
 
-    if(!throwing && !caught && hasPokeball){
+    if(!throwing && !caught && hasItem(currentPokeball)){
       setThrowing(true)
       const playerThrowing = document.querySelector("#player-throwing")
       const ballContainer = document.querySelector(".ball-container")
@@ -296,7 +329,7 @@ export default function EncounterScreen(props) {
       playerThrowing.classList.add("throw")
 
       ballContainer.classList.add("ball-animation")
-      ballContainer.style.backgroundImage = `url("/pokeballs/${currentPokeball}/Throwing.png")`
+      ballContainer.style.backgroundImage = `url("/pokeballs/${pokeballName}/Throwing.png")`
 
       const wasCaught = await isCaught();
       setCaught(wasCaught);
@@ -366,6 +399,8 @@ export default function EncounterScreen(props) {
           playerThrowing.classList.remove("throw");
           setUseBerry(false)
       }, randTime + 930 + 500);
+
+      updateInventory(currentPokeball, "pokeballs", "remove")
     }
   }
 
@@ -376,8 +411,7 @@ export default function EncounterScreen(props) {
 
   useEffect(()=>{
     if(currentBait != ""){
-      const selectedBait = inventory[1].baits.find(element => Object.keys(element) == currentBait)[currentBait]
-      setBerryValue(selectedBait.value)
+      setBerryValue(currentBait.value)
     } else {
       setBerryValue(0)
     }
@@ -386,7 +420,9 @@ export default function EncounterScreen(props) {
   //use Berry
 
   useEffect(()=>{
+    const pokemonImage = document.querySelector("#pokemonImage")
     const nameTag = document.querySelector(".wild-pokemon>.name-tag")
+
     if(useBerry){
       const image = new Image
       image.src = berryImage
@@ -394,6 +430,19 @@ export default function EncounterScreen(props) {
       image.style.width = "42px"
       image.style.height = "42px"
       nameTag.appendChild(image)
+
+      const berryFadeImage = new Image
+      berryFadeImage.src = berryImage
+      berryFadeImage.style.width = "100px"
+      berryFadeImage.style.height = "100px"
+
+      berryFadeImage.classList.add("berryFadeAnimation")
+      setTimeout(() => {
+        pokemonImage.removeChild(document.querySelector(".berryFadeAnimation"))
+      }, 3000);
+
+      pokemonImage.appendChild(berryFadeImage)
+      updateInventory (currentBait, "baits", "remove")
     } else {
       const domImage = document.querySelector(".wild-pokemon #pokemon-img")
       if(nameTag.contains(domImage)){
@@ -425,27 +474,35 @@ export default function EncounterScreen(props) {
     backgroundImage : `url(${isShiny ? shinySprite.front : normalSprite.front})`
   }
 
-  const inventoryWindow = (
-    <div className="inventory d-flex flex-column">
-      {inventory[0].pokeballs.map(item  => {
+  const inventoryWindow = () => {
+    const inventoryCategories = Object.keys(inventory)
+    const pokeballsCategories = Object.keys(inventory[inventoryCategories[0]])
+    const baitsCategories = Object.keys(inventory[inventoryCategories[1]])
+
+    return (
+      <div className="inventory d-flex flex-column">
+      {pokeballsCategories.map((itemName) => {
+        const pokeball = inventory.pokeballs[itemName]
         return(
-          <div key={Object.keys(item)+"container"} className="pokeball-section item d-flex flex-column justify-content-center">
-            <div className="item-image" id={Object.keys(item)}></div>
-            <span className='d-flex justify-content-between'><h3 className='inventory-item'>{Object.keys(item)}</h3> <h3>x {item[Object.keys(item)].quantity}</h3></span>
+          <div key={itemName+"container"} className="pokeball-section item d-flex flex-column justify-content-center">
+            <div className="item-image" id={itemName}></div>
+            <span className='d-flex justify-content-between'><h3 className='inventory-item'>{itemName}</h3> <h3>x {pokeball.quantity}</h3></span>
           </div>
         )
       })}
       <div className="bag-split w-100"></div>
-      {inventory[1].baits.map(item  => {
+      {baitsCategories.map((itemName) => {
+        const bait = inventory.baits[itemName]
         return(
-          <div key={Object.keys(item)+"container"} className="bait-section item d-flex flex-column justify-content-center">
-            <div className="item-image" id={Object.keys(item)}></div>
-            <span className='d-flex justify-content-between'><h3 className='inventory-item'>{Object.keys(item)}</h3> <h3>x {item[Object.keys(item)].quantity}</h3></span>
+          <div key={itemName+"container"} className="bait-section item d-flex flex-column justify-content-center">
+            <div className="item-image" id={itemName}></div>
+            <span className='d-flex justify-content-between'><h3 className='inventory-item'>{itemName}</h3> <h3>x {bait.quantity}</h3></span>
           </div>
         )
       })}
     </div>
-  )
+    )
+  }
 
   const [berryImage, setBerryImage] = useState(`/berry/RazzBerry.png`)
 
@@ -471,7 +528,7 @@ export default function EncounterScreen(props) {
         <div className="battle-section p-3">
           <div className="wild-pokemon p-3">
             <div className="img-container">
-              <div id="pokemonImage" style={pokemonImageStyle}></div>
+              <div id="pokemonImage" className="d-flex justify-content-center align-items-center" style={pokemonImageStyle}></div>
               <div id="pokemonBallAnimation" className=''> </div>
               <div className='pokemonImageShadow'></div>
             </div>
@@ -506,7 +563,7 @@ export default function EncounterScreen(props) {
             </div>
           </div>
           <div className="inventory-overlay w-100 d-flex justify-content-center align-items-center">
-            {bagWindow && inventoryWindow}
+            {bagWindow && inventoryWindow()}
           </div>
         </div>
         <div className="battle-interface row w-100 p-3">
@@ -514,7 +571,7 @@ export default function EncounterScreen(props) {
             {systemMessage}
           </div>
           <div className="inferface-container col-6">
-            <div className="button rounded"><img className="interface-pokeball-image" src={`/pokeballs/${currentPokeball}/idle.png`} /><h2>Capture</h2></div>
+            <div className="button rounded"><img className="interface-pokeball-image" src={`/pokeballs/${currentPokeball.name}/idle.png`} /><h2>Capture</h2></div>
             <div className="button rounded"><img className="interface-pokeball-image" src={berryImage} style={berryStyle} /><h2>Berry</h2></div>
             <div className="button rounded"><img className="interface-pokeball-image interface-image-large" src="/bag.png" /><h2>Bag</h2></div>
             <div className="button rounded" onClick={run}><img className="interface-pokeball-image" src="/run.png" /><h2>Run</h2></div>
@@ -527,10 +584,7 @@ export default function EncounterScreen(props) {
 
 // code berry logic
 
-// when berry is clicked, the correct berry will fade into the pokemon image,
-// when this happens the pokemon name tag gets an icon
-
-//after catch or fail the berry should fade
+// once used, the item should be remvoed from the inventory
 
 // set running logic and animation
 

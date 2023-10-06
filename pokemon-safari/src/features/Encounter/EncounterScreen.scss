@@ -140,7 +140,6 @@
     width: 30px;
     height: 30px;
   }
-
 }
 
 .inventory-overlay{
@@ -232,6 +231,23 @@ $pokeballTilt: 20deg;
 @keyframes catchingFail{
   0%, 100% { background-position: -0px 0px; }
   50% { background-position: calc(-200px / 3 * 2) 0px; }
+}
+
+.berryFadeAnimation{
+  animation: 3s berryFadeAnimation forwards;
+}
+
+@keyframes berryFadeAnimation {
+  0%{
+    opacity: 1;
+  }
+
+  15%{
+    opacity: 1;
+  }
+  100%{
+    opacity: 0;
+  }
 }
 
 .catching-success{

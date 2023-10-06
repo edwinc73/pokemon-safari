@@ -34,42 +34,47 @@ function App() {
 
   //inventory
 
-  const [inventory, setInventory] = useState([
-     { pokeballs:[
-        {pokeball: {
+  const [inventory, setInventory] = useState({
+     pokeballs:{
+        pokeball: {
+          name: "pokeball",
           quantity: 10,
           value: 0,
           rarity: 1
-        }},
-        {greatball: {
+        },
+        greatball: {
+          name: "greatball",
           quantity: 0,
           value: 20,
           rarity: 0.4
-        }},
-        {ultraball: {
+        },
+        ultraball: {
+          name: "ultraball",
           quantity: 0,
           value: 60,
           rarity: 0.2
-        }},
-        {masterball: {
+        },
+        masterball: {
+          name: "masterball",
           quantity: 0,
           value: 4000,
           rarity: 0.025
-        }}
-      ]},
-    {baits:[
-      {berry:{
+        }
+      },
+    baits:{
+      berry:{
+        name: "berry",
         quantity : 5,
         value: 5
-      }},
-      {banana:{
+      },
+      banana:{
+        name: "banana",
         quantity : 0,
         value: 15
-      }}
-    ]},
-    {etc:[]}
-  ])
-
+      }
+    },
+    etc:[]
+  })
 
   // caught pokemon
   const [caughtPokemonList, setCaughtPokemonList] = useState([])
