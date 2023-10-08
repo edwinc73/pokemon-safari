@@ -588,4 +588,6 @@ export default function EncounterScreen(props) {
 
 // set running logic and animation
 
+//add random items on the map
+
 // add lazy loading and a loading screen to make sure the images are loaded in before the user sees it
