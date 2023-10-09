@@ -51,4 +51,4 @@ export const mapArray = (coord) => {
   return coordArray
 }
 
-export const collisionCoord = mapArray(collisionsArray)
+export const collision = mapArray(collisionsArray)

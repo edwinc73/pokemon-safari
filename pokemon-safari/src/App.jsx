@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectAllPokemon, selectPosition } from './selectors/selectors'
+import { selectAllPokemon, selectCollisionCoord, selectPosition } from './selectors/selectors'
 import config  from "./constants/config.js";
 
 import './App.scss'
@@ -20,8 +20,8 @@ import useMovement from "./customHook/useMovement"
 import store from "./store/index"
 import {SET_LOADING, SET_COLLISION, SET_GRASS, SET_POSITION, SET_ENCOUNTER, ADD_POKEMON, NEW_POKEMON, ADD_ITEM, REMOVE_ITEM, FETCH_ALL_POKEMON_DATA} from "./actions/actionsCreator"
 
-import { collisionCoord } from "../data/collision-map"
-import { grassCoord } from "../data/grass-map.js"
+import { collision } from "../data/collision-map"
+import { grass } from "../data/grass-map.js"
 
 function App() {
   const dispatch  = useDispatch()
@@ -30,8 +30,8 @@ function App() {
 
   useEffect(()=>{
     //      initialize map
-    dispatch(SET_COLLISION(collisionCoord))
-    dispatch(SET_GRASS(grassCoord))
+    dispatch(SET_COLLISION(collision))
+    dispatch(SET_GRASS(grass))
     dispatch(SET_ENCOUNTER(false))
     dispatch(NEW_POKEMON(1, "bob", true, "url", 100))
     dispatch(ADD_ITEM("berry"))
@@ -39,23 +39,27 @@ function App() {
     dispatch(ADD_ITEM("pokeball"))
     dispatch(REMOVE_ITEM("pokeball"))
     dispatch(FETCH_ALL_POKEMON_DATA())
+  }, [])
+
+
+  //      Get all states from store
+  const allPokemonData = useSelector(selectAllPokemon)
+  const position = useSelector(selectPosition)
+  const collisionCoord = useSelector(selectCollisionCoord)
+
+
+  useEffect(()=>{
+    if (!collisionCoord) return;
 
     document.addEventListener('keydown', handleMovement);
     return () => {
       document.removeEventListener('keydown', handleMovement);
     };
-  }, [])
-  console.log(store.getState())
+  }, [collisionCoord])
 
-  //      Get all states from store
-  const allPokemonData = useSelector(selectAllPokemon)
-  const position = useSelector(selectPosition)
+  //   // loading pokemon in encounter screen
 
-
-
-//   // loading pokemon in encounter screen
-
-//   useEffect(() => {
+  //   useEffect(() => {
 //     if(encounter){
 //       setLoading(true)
 //     }

@@ -11,7 +11,13 @@ const origin = {
 export const setPositionReducer = (state= origin, action) => {
   switch (action.type) {
     case actions.PLAYER_MOVED:
-        return action.payload
+      return{
+        direction: action.payload.direction,
+        movementValue: {
+          x: state.movementValue.x + action.payload.movementValue.x,
+          y: state.movementValue.y + action.payload.movementValue.y
+        }
+      }
     default:
       return state
   }

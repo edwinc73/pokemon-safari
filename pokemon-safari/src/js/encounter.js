@@ -1,5 +1,6 @@
-import { nanoid } from 'nanoid'
+import config from "../constants/config"
 const pokemonApi = "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1292"
+
 
 export const getPokemonData = async () =>{
   const response = await fetch(pokemonApi)
@@ -21,4 +22,8 @@ export const getEncounteredPokemon = async (encounteredPokemon) =>{
   } catch (error) {
     console.error("Error occured", error)
   }
+}
+
+export const encountered = () =>{
+  return Math.random() * 100 < config.encounteredChance
 }
