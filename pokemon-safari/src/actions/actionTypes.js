@@ -11,3 +11,4 @@ export const FOUND_POKEMON = "newPokemonEncounter"
 
 export const FOUND_ITEM = "addItemToInventory"
 export const USED_ITEM = "removeItemToInventory"
+export const FETCH_ALL_POKEMON = "fetchALLPokemon"

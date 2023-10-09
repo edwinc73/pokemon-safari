@@ -2,7 +2,7 @@ import * as actions from "../actions/actionTypes"
 
 const origin = {
   direction: "walk-down",
-  movementvalue: {
+  movementValue: {
     x: -610,
     y: -1150
   }

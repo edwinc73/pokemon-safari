@@ -1,11 +1,13 @@
 import React from "react"
 import "./Player.scss"
+import { selectPosition } from '../../selectors/selectors'
+import { useDispatch, useSelector } from 'react-redux'
 
-export function Player(props){
-  const {direction} = props
-
+export function Player(){
+  const dispatch = useDispatch()
+  const position = useSelector(selectPosition)
   const playerStyle = {
-    backgroundImage: `url(${direction}.png)`
+    backgroundImage: `url(${position.direction}.png)`
   };
 
   return(

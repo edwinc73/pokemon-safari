@@ -1,25 +1,32 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { selectAllPokemon, selectPosition } from './selectors/selectors'
+import config  from "./constants/config.js";
+
 import './App.scss'
 
 // import Key from "../src/features/Key/Key"
-// import {Player} from "../src/features/Player/Player"
-// import { handleMovement } from './js/movement'
+import {Player} from "../src/components/Player/Player"
+import useMovement from "./customHook/useMovement"
 // import {getPokemonData, randomPokemon} from "./js/encounter"
 // import {mapCoord} from "./js/mapCoord.js"
 // import EncounterScreen from "./features/Encounter/EncounterScreen"
 // import { getEncounteredPokemon } from "../src/js/encounter.js";
 // import Loading from "../src/features/Loading/Loading"
 
+
+
 //redux
 import store from "./store/index"
-import {SET_LOADING, SET_COLLISION, SET_GRASS, SET_POSITION, SET_ENCOUNTER, ADD_POKEMON, NEW_POKEMON, ADD_ITEM, REMOVE_ITEM} from "./actions/actionsCreator"
+import {SET_LOADING, SET_COLLISION, SET_GRASS, SET_POSITION, SET_ENCOUNTER, ADD_POKEMON, NEW_POKEMON, ADD_ITEM, REMOVE_ITEM, FETCH_ALL_POKEMON_DATA} from "./actions/actionsCreator"
 
 import { collisionCoord } from "../data/collision-map"
 import { grassCoord } from "../data/grass-map.js"
 
 function App() {
   const dispatch  = useDispatch()
+  const { backgroundSize } = config
+  const { handleMovement } = useMovement()
 
   useEffect(()=>{
     //      initialize map
@@ -31,65 +38,20 @@ function App() {
     dispatch(ADD_ITEM("pokeball"))
     dispatch(ADD_ITEM("pokeball"))
     dispatch(REMOVE_ITEM("pokeball"))
+    dispatch(FETCH_ALL_POKEMON_DATA())
 
-    console.log(store.getState())
+    document.addEventListener('keydown', handleMovement);
+    return () => {
+      document.removeEventListener('keydown', handleMovement);
+    };
   }, [])
+  console.log(store.getState())
 
-//   //inventory
+  //      Get all states from store
+  const allPokemonData = useSelector(selectAllPokemon)
+  const position = useSelector(selectPosition)
 
-//   const [inventory, setInventory] = useState({
-//      pokeballs:{
-//         pokeball: {
-//           name: "pokeball",
-//           quantity: 10,
-//           value: 0,
-//           rarity: 1
-//         },
-//         greatball: {
-//           name: "greatball",
-//           quantity: 0,
-//           value: 20,
-//           rarity: 0.4
-//         },
-//         ultraball: {
-//           name: "ultraball",
-//           quantity: 0,
-//           value: 60,
-//           rarity: 0.2
-//         },
-//         masterball: {
-//           name: "masterball",
-//           quantity: 0,
-//           value: 4000,
-//           rarity: 0.025
-//         }
-//       },
-//     baits:{
-//       berry:{
-//         name: "berry",
-//         quantity : 5,
-//         value: 5
-//       },
-//       banana:{
-//         name: "banana",
-//         quantity : 0,
-//         value: 15
-//       }
-//     },
-//     etc:[]
-//   })
 
-//   // caught pokemon
-//   const [caughtPokemonList, setCaughtPokemonList] = useState([])
-
-//   //get all pokemon
-//   useEffect(()=>{
-//     const fetchData = async () => {
-//       const data = await getPokemonData();
-//       setPokemonList(data);
-//     }
-//     fetchData();
-//   },[])
 
 //   // loading pokemon in encounter screen
 
@@ -153,17 +115,13 @@ function App() {
 //   const keyNames = ["ArrowUp","ArrowLeft", "ArrowDown", "ArrowRight"]
 //   const actionKeys = ["z", "x"]
 
-//   const backgroundSize = {
-//     width: 1120 * 4,
-//     height: 608 * 4
-//   }
 
-//   const backgroundStyle ={
-//     top: `${direction.movementValue.y}px`,
-//     left: `${direction.movementValue.x}px`,
-//     width: `${backgroundSize.width}px`,
-//     height: ` ${backgroundSize.height}px`
-//   }
+  const backgroundStyle ={
+    top: `${position.movementValue.y}px`,
+    left: `${position.movementValue.x}px`,
+    width: `${backgroundSize.width}px`,
+    height: ` ${backgroundSize.height}px`
+  }
 
 //   useEffect(()=>{
 //     const gameScreen = document.querySelector(".game")
@@ -176,43 +134,43 @@ function App() {
 //     }
 //   },[encounter])
 
-//   const safariMap = (
-//   <div className="game d-flex">
-//     <img src="/bg-map.png" id="game-backdrop"alt="" />
-//     <div className="game-window p-5" style={backgroundStyle}>
-//       <img src="/game-map.png" alt="" />
-//     </div>
-//       <Player direction = {direction.direction} />
-//   </div>
-//   )
+  const safariMap = (
+  <div className="game d-flex">
+    <img src="/bg-map.png" id="game-backdrop"alt="" />
+    <div className="game-window p-5" style={backgroundStyle}>
+      <img src="/game-map.png" alt="" />
+    </div>
+      <Player direction = {position.direction} />
+  </div>
+  )
 
-//   return (
-//     <>
-//       <div className="background-color">
-//         <div className="game-container">
-//           {safariMap}
-//           <EncounterScreen
-//             encounteredPokemon = {encounteredPokemon}
-//             setEncounter = {setEncounter}
-//             setEncounteredPokemon = {setEncounteredPokemon}
-//             setCaughtPokemonList = {setCaughtPokemonList}
-//             inventory = {inventory}
-//             setInventory = {setInventory}
-//             setLoading = {setLoading}
-//             loading = {loading}
-//           />
-//           <Loading
-//             encounter = {encounter}
-//           />
-//         </div>
-//         <Key
-//           directionKeys = {directionKeys}
-//           keyNames = {keyNames}
-//           actionKeys = {actionKeys}
-//         />
-//       </div>
-//     </>
-//   )
+  return (
+    <>
+      <div className="background-color">
+        <div className="game-container">
+          {safariMap}
+          {/* <EncounterScreen
+            encounteredPokemon = {encounteredPokemon}
+            setEncounter = {setEncounter}
+            setEncounteredPokemon = {setEncounteredPokemon}
+            setCaughtPokemonList = {setCaughtPokemonList}
+            inventory = {inventory}
+            setInventory = {setInventory}
+            setLoading = {setLoading}
+            loading = {loading}
+          /> */}
+          {/* <Loading
+            encounter = {encounter}
+          /> */}
+        </div>
+        {/* <Key
+          directionKeys = {directionKeys}
+          keyNames = {keyNames}
+          actionKeys = {actionKeys}
+        /> */}
+      </div>
+    </>
+  )
 }
 
 export default App

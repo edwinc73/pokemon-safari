@@ -1,4 +1,5 @@
 import * as actions from "./actionTypes"
+import { fetchData } from "../services/fetch"
 
 // initialize game
 
@@ -12,6 +13,19 @@ export const SET_GRASS = (grassCoord) => ({
   payload: grassCoord
 })
 
+export const FETCH_ALL_POKEMON_DATA = () => {
+  return async (dispatch) => {
+    try {
+      const response = await fetchData();
+      dispatch({
+        type: actions.FETCH_ALL_POKEMON,
+        payload: response
+      });
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+}
 
 // game event screen triggers
 export const SET_LOADING = (isLoading) =>({
