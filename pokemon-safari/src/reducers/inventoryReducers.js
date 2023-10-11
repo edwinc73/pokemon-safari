@@ -26,3 +26,30 @@ export const updateItemReducer = (state= "", action) => {
       return state
   }
 }
+
+export const setItemIndex = (state = "", action) => {
+  switch (action.type) {
+    case actions.BROWSE_ITEM:
+      return action.payload
+    default:
+      return state
+  }
+}
+
+export const setCurrentPokeball = (state = "", action) => {
+  switch (action.type) {
+    case actions.SELECT_POKEBALL:
+      return action.payload
+    default:
+      return state
+  }
+}
+
+export const SetBait = (state = "", action) => {
+  switch (action.type) {
+    case actions.SELECT_BAIT:
+      return action.payload
+    default:
+      return state
+  }
+}

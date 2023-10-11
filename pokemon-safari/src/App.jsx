@@ -1,39 +1,50 @@
 import React, { useEffect, useState } from 'react'
+import { nanoid, random } from 'nanoid';
 import { useDispatch, useSelector } from 'react-redux'
-import { selectAllPokemon, selectCollisionCoord, selectPosition } from './selectors/selectors'
+import { selectAllPokemon, selectCollisionCoord, selectEncounter, selectPosition, selectPokemonEncounter, selectInventory} from './selectors/selectors'
 import config  from "./constants/config.js";
 
 import './App.scss'
 
-// import Key from "../src/features/Key/Key"
 import {Player} from "../src/components/Player/Player"
 import useMovement from "./customHook/useMovement"
+import EncounterScreen from "./components/Encounter/EncounterScreen"
+import { getEncounteredPokemon, randomPokemon, pokemonName, isShiny, setPokemonLevel } from './js/encounter';
+
+// import Key from "../src/features/Key/Key"
 // import {getPokemonData, randomPokemon} from "./js/encounter"
 // import {mapCoord} from "./js/mapCoord.js"
-// import EncounterScreen from "./features/Encounter/EncounterScreen"
-// import { getEncounteredPokemon } from "../src/js/encounter.js";
 // import Loading from "../src/features/Loading/Loading"
 
 
 
-//redux
+//      redux
 import store from "./store/index"
-import {SET_LOADING, SET_COLLISION, SET_GRASS, SET_POSITION, SET_ENCOUNTER, ADD_POKEMON, NEW_POKEMON, ADD_ITEM, REMOVE_ITEM, FETCH_ALL_POKEMON_DATA} from "./actions/actionsCreator"
+import {SET_LOADING, SET_COLLISION, SET_GRASS, SET_POSITION, SET_ENCOUNTER, ADD_POKEMON, NEW_POKEMON, ADD_ITEM, REMOVE_ITEM, FETCH_ALL_POKEMON_DATA, CURRENT_POKEBALL, CURRENT_BAIT} from "./actions/actionsCreator"
 
+//      data
 import { collision } from "../data/collision-map"
 import { grass } from "../data/grass-map.js"
+import { findItem } from './js/inventory';
 
 function App() {
   const dispatch  = useDispatch()
   const { backgroundSize } = config
   const { handleMovement } = useMovement()
 
+  //      Get all states from store
+  const inventory = useSelector(selectInventory)
+  const allPokemonData = useSelector(selectAllPokemon)
+  const position = useSelector(selectPosition)
+  const collisionCoord = useSelector(selectCollisionCoord)
+  const encounter = useSelector(selectEncounter)
+  const pokemonEncounter = useSelector(selectPokemonEncounter)
+
   useEffect(()=>{
     //      initialize map
     dispatch(SET_COLLISION(collision))
     dispatch(SET_GRASS(grass))
     dispatch(SET_ENCOUNTER(false))
-    dispatch(NEW_POKEMON(1, "bob", true, "url", 100))
     dispatch(ADD_ITEM("berry"))
     dispatch(ADD_ITEM("pokeball"))
     dispatch(ADD_ITEM("pokeball"))
@@ -41,11 +52,11 @@ function App() {
     dispatch(FETCH_ALL_POKEMON_DATA())
   }, [])
 
+  useEffect(()=>{
+    dispatch(CURRENT_POKEBALL(findItem(inventory, "pokeball")))
+    dispatch(CURRENT_BAIT(findItem(inventory, "berry")))
+  }, [encounter])
 
-  //      Get all states from store
-  const allPokemonData = useSelector(selectAllPokemon)
-  const position = useSelector(selectPosition)
-  const collisionCoord = useSelector(selectCollisionCoord)
 
 
   useEffect(()=>{
@@ -56,6 +67,23 @@ function App() {
       document.removeEventListener('keydown', handleMovement);
     };
   }, [collisionCoord])
+
+  useEffect(() => {
+    const getData = async () => {
+      if (allPokemonData.length === 0 || !encounter) return;
+      try {
+        const pokemon = randomPokemon(allPokemonData)
+        const {name, sprites, base_experience : baseExperience} = await getEncounteredPokemon(pokemon)
+        const shiny = isShiny()
+        dispatch(NEW_POKEMON(nanoid(), pokemonName(name), shiny, shiny ? sprites.front_shiny : sprites.front_default, setPokemonLevel(), baseExperience || 255))
+      } catch (error) {
+        console.error("error", error);
+      }
+    };
+    getData()
+  }, [encounter]);
+
+  // console.log(store.getState())
 
   //   // loading pokemon in encounter screen
 
@@ -153,16 +181,7 @@ function App() {
       <div className="background-color">
         <div className="game-container">
           {safariMap}
-          {/* <EncounterScreen
-            encounteredPokemon = {encounteredPokemon}
-            setEncounter = {setEncounter}
-            setEncounteredPokemon = {setEncounteredPokemon}
-            setCaughtPokemonList = {setCaughtPokemonList}
-            inventory = {inventory}
-            setInventory = {setInventory}
-            setLoading = {setLoading}
-            loading = {loading}
-          /> */}
+          <EncounterScreen />
           {/* <Loading
             encounter = {encounter}
           /> */}

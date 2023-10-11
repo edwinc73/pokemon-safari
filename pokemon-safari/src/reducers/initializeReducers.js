@@ -21,7 +21,6 @@ export const setGrassCoord = (state = "", action) => {
 export const fetchAllPokemonDataReducer =(state = [], action) => {
   switch (action.type) {
     case actions.FETCH_ALL_POKEMON:
-      console.log("running")
       return action.payload
     default:
       return state

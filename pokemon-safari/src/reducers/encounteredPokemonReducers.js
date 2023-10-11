@@ -2,7 +2,7 @@ import * as actions from "../actions/actionTypes"
 
 export const encounterPokemonReducer = (state ={}, action) => {
   switch (action.type) {
-    case actions.FOUNDPOKEMON:
+    case actions.FOUND_POKEMON:
       return action.payload
     default:
       return state

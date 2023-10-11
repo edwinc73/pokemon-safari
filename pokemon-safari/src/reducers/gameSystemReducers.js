@@ -17,3 +17,21 @@ export const setEncounteredReducer = (state = false, action) => {
       return state
   }
 }
+
+export const setBagWindowReducer = (state = false, action) => {
+  switch (action.type) {
+    case actions.OPEN_BAG:
+      return action.payload
+    default:
+      state
+  }
+}
+
+export const setSystemMessages = (state = "", action) => {
+  switch (action.type) {
+    case actions.BROWSE_INTERFACE:
+      return action.payload
+    default:
+      return state
+  }
+}
