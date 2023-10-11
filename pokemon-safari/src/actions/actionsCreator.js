@@ -53,6 +53,11 @@ export const SYSTEM_MESSAGE = (message) => ({
   payload: message
 })
 
+export const INTERFACE_INDEX = (i) => ({
+  type: actions.CURRENT_INTERFACE_INDEX,
+  payload: i
+})
+
 
 // player movement
 export const SET_POSITION = (direction, x, y) => ({
@@ -86,11 +91,6 @@ export const ADD_POKEMON = (pokemon) => ({
 
 
 
-
-
-
-
-
 // inventory
 export const ADD_ITEM = (item) => ({
   type: actions.FOUND_ITEM,
@@ -104,15 +104,15 @@ export const REMOVE_ITEM = (item) => ({
 
 export const SELECT_ITEM_INDEX = (index) => ({
   type: actions.BROWSE_ITEM,
-  action: index
+  payload: index
 })
 
 export const CURRENT_POKEBALL = (item) => ({
   type: actions.SELECT_POKEBALL,
-  action: item
+  payload: item
 })
 
 export const CURRENT_BAIT = (item) => ({
   type: actions.SELECT_BAIT,
-  action: item
+  payload: item
 })

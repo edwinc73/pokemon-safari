@@ -23,14 +23,26 @@ export const setBagWindowReducer = (state = false, action) => {
     case actions.OPEN_BAG:
       return action.payload
     default:
-      state
+      return state
   }
 }
 
-export const setSystemMessages = (state = "", action) => {
+export const setSystemMessagesReducer = (state = "", action) => {
   switch (action.type) {
     case actions.BROWSE_INTERFACE:
       return action.payload
+    default:
+      return state
+  }
+}
+
+export const setCurrentInterfaceIndex = (state = 0, action) => {
+  switch (action.type) {
+    case actions.CURRENT_INTERFACE_INDEX:
+      if(state + action.payload > 3 || state + action.payload < 0){
+        return state
+      }
+      return state + action.payload
     default:
       return state
   }

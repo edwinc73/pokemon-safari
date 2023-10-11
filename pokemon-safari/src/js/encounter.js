@@ -9,8 +9,6 @@ export const getPokemonData = async () =>{
 
 export const randomPokemon = (pokemonList) =>{
   const index = Math.floor(Math.random() * pokemonList.length)
-  // console.log(index)
-  // console.log(pokemonList[index])
   return pokemonList[index].url
 }
 
@@ -21,6 +19,7 @@ export const getEncounteredPokemon = async (pokemonUrl) =>{
       throw new Error('Network response was not ok');
     }
     const data = await response.json();
+    console.log(data && "data loaded")
     return data;
   } catch (error) {
     console.error("Error occured", error)

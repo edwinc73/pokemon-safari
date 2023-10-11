@@ -1,24 +1,36 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import "./EncounterScreen.scss"
 
 import config from '../../constants/config'
 
-import { selectEncounter, selectInventory, selectPokemonEncounter } from "../../selectors/selectors"
+import { selectBagWindow, selectEncounter, selectInventory, selectPokemonEncounter, selectSystemMessage, selectCurrentItemIndex, selectCurrentPokeball, selectCurrentBait, selectCurrentInterfaceIndex } from "../../selectors/selectors"
 import updateInventory from '../../customHook/updateInventory'
+import navigateInterface from '../../customHook/navigateInterface'
+import { INTERFACE_INDEX, SELECT_ITEM_INDEX } from "../../actions/actionsCreator.js"
 
 import {PlayerThrowing} from "../Player/Player"
 import { hasItem } from '../../js/inventory'
+import { setCurrentInterfaceIndex } from '../../reducers/gameSystemReducers'
 
 let lastMoveTime = 0;
 
 export default function EncounterScreen(props) {
+  const dispatch = useDispatch()
   const {useItem, foundItem} = updateInventory()
+  const { handleInterfaceKeyDown } = navigateInterface()
 
   const inventory = useSelector(selectInventory)
   const encounter = useSelector(selectEncounter)
   const pokemon = useSelector(selectPokemonEncounter)
+  const bagWindow = useSelector(selectBagWindow)
+  const systemMessage = useSelector(selectSystemMessage)
+  const itemIndex = useSelector(selectCurrentItemIndex)
+  const currentPokeball = useSelector(selectCurrentPokeball)
+  const currentBait = useSelector(selectCurrentBait)
+  const currentInterfaceIndex = useSelector(selectCurrentInterfaceIndex)
+
 
   //      style
   const encounterStyle = {
@@ -29,10 +41,12 @@ export default function EncounterScreen(props) {
     backgroundImage : `url(${pokemon.sprite})`
   }
 
+  useEffect(() => {
+    dispatch(SELECT_ITEM_INDEX(0))
+    dispatch(INTERFACE_INDEX(0))
+  },[pokemon])
 
   // useEffect(() => {
-  //   setIsShiny(Math.floor(Math.random() * 100) < shinyChance)
-  //   setCaught(false)
 
   //   // check if image has been loaded
   //   if(encounteredPokemon){
@@ -59,9 +73,9 @@ export default function EncounterScreen(props) {
   //       }
   //     })
   //     // add active
-  //     items[currentItemIndex].classList.add("active")
+  //     items[itemIndex].classList.add("active")
   //   }
-  // }, [bagWindow, currentItemIndex])
+  // }, [bagWindow, itemIndex])
 
   // useEffect(() => {
   //   const navigateInventory = async (e) => {
@@ -107,75 +121,26 @@ export default function EncounterScreen(props) {
   // // system interface navigation
 
 
-  // useEffect(()=> {
-  //   setActiveButtonIndex(0)
-  // },[encounteredPokemon])
+  useEffect(()=> {
+    dispatch(INTERFACE_INDEX(0))
+  },[pokemon])
 
-  // useEffect(()=>{
-  //   if (encounteredPokemon) {
-  //     const interfaceButtons = document.querySelectorAll(".inferface-container")[0].childNodes;
-  //     interfaceButtons.forEach(button => {
-  //       button.classList.contains("active") && button.classList.remove("active");
-  //     });
-  //     interfaceButtons[activeButtonIndex].classList.add("active");
-  //   }
-  // },[encounteredPokemon, activeButtonIndex])
+  useEffect(()=>{
+    if (pokemon) {
+      const interfaceButtons = document.querySelectorAll(".inferface-container")[0].childNodes;
+      interfaceButtons.forEach(button => {
+        button.classList.contains("active") && button.classList.remove("active");
+      });
+      interfaceButtons[currentInterfaceIndex].classList.add("active");
+    }
+  },[pokemon, currentInterfaceIndex])
 
-  // useEffect(() => {
-  //   const handleKeyDown = (e) => {
-  //     const currentTime = new Date().getTime();
-  //     if (currentTime - lastMoveTime < debounceTime) {
-  //       return;
-  //     } else {
-  //       if (encounteredPokemon && !bagWindow) {
-  //         switch (e.key) {
-  //           case "ArrowUp":
-  //             setActiveButtonIndex(prev => (prev >= 2 && prev <= 3) ? prev - 2 : prev);
-  //           break;
-  //           case "ArrowDown":
-  //             setActiveButtonIndex(prev => (prev < 2 && prev >= 0) ? prev + 2 : prev);
-  //           break;
-  //           case "ArrowLeft":
-  //             setActiveButtonIndex(prev => (prev % 2 > 0) ? prev - 1 : prev);
-  //           break;
-  //           case "ArrowRight":
-  //             setActiveButtonIndex(prev => (prev % 2 === 0) ? prev + 1 : prev);
-  //           break;
-  //           case "z":
-  //             switch (activeButtonIndex) {
-  //               case 0:
-  //                 setThrow()
-  //               break;
-  //               case 1:
-  //                 if(currentBait && hasItem(currentBait)){
-  //                   setUseBerry(true)
-  //                 } else if(!currentBait) {
-  //                   alert("Please select berry")
-  //                 } else if (!hasItem(currentBait)){
-  //                   alert("No more berries!")
-  //                 }
-  //               break;
-  //               case 2:
-  //                 openBag()
-  //               break;
-  //               case 3:
-  //                 run()
-  //               break;
-  //             }
-  //           break;
-  //           default:
-  //           break;
-  //         }
-  //       }
-  //       lastMoveTime = currentTime
-  //     }
-  //   };
-
-  //   document.addEventListener("keyup", handleKeyDown);
-  //   return () => {
-  //     document.removeEventListener("keyup", handleKeyDown);
-  //   };
-  // }, [encounteredPokemon, bagWindow, lastMoveTime]);
+  useEffect(() => {
+    document.addEventListener("keyup", handleInterfaceKeyDown);
+    return () => {
+      document.removeEventListener("keyup", handleInterfaceKeyDown);
+    };
+  }, [pokemon, bagWindow, lastMoveTime]);
 
   // const [systemMessage, setSystemMessage] = useState(messages.encounter)
 
@@ -377,35 +342,35 @@ export default function EncounterScreen(props) {
 
   // // styles
 
-  // const inventoryWindow = () => {
-  //   const inventoryCategories = Object.keys(inventory)
-  //   const pokeballsCategories = Object.keys(inventory[inventoryCategories[0]])
-  //   const baitsCategories = Object.keys(inventory[inventoryCategories[1]])
+  const inventoryWindow = () => {
+    const inventoryCategories = Object.keys(inventory)
+    const pokeballsCategories = Object.keys(inventory[inventoryCategories[0]])
+    const baitsCategories = Object.keys(inventory[inventoryCategories[1]])
 
-  //   return (
-  //     <div className="inventory d-flex flex-column">
-  //     {pokeballsCategories.map((itemName) => {
-  //       const pokeball = inventory.pokeballs[itemName]
-  //       return(
-  //         <div key={itemName+"container"} className="pokeball-section item d-flex flex-column justify-content-center">
-  //           <div className="item-image" id={itemName}></div>
-  //           <span className='d-flex justify-content-between'><h3 className='inventory-item'>{itemName}</h3> <h3>x {pokeball.quantity}</h3></span>
-  //         </div>
-  //       )
-  //     })}
-  //     <div className="bag-split w-100"></div>
-  //     {baitsCategories.map((itemName) => {
-  //       const bait = inventory.baits[itemName]
-  //       return(
-  //         <div key={itemName+"container"} className="bait-section item d-flex flex-column justify-content-center">
-  //           <div className="item-image" id={itemName}></div>
-  //           <span className='d-flex justify-content-between'><h3 className='inventory-item'>{itemName}</h3> <h3>x {bait.quantity}</h3></span>
-  //         </div>
-  //       )
-  //     })}
-  //   </div>
-  //   )
-  // }
+    return (
+      <div className="inventory d-flex flex-column">
+      {pokeballsCategories.map((itemName) => {
+        const pokeball = inventory.pokeballs[itemName]
+        return(
+          <div key={itemName+"container"} className="pokeball-section item d-flex flex-column justify-content-center">
+            <div className="item-image" id={itemName}></div>
+            <span className='d-flex justify-content-between'><h3 className='inventory-item'>{itemName}</h3> <h3>x {pokeball.quantity}</h3></span>
+          </div>
+        )
+      })}
+      <div className="bag-split w-100"></div>
+      {baitsCategories.map((itemName) => {
+        const bait = inventory.baits[itemName]
+        return(
+          <div key={itemName+"container"} className="bait-section item d-flex flex-column justify-content-center">
+            <div className="item-image" id={itemName}></div>
+            <span className='d-flex justify-content-between'><h3 className='inventory-item'>{itemName}</h3> <h3>x {bait.quantity}</h3></span>
+          </div>
+        )
+      })}
+    </div>
+    )
+  }
 
   // const [berryImage, setBerryImage] = useState(`/berry/RazzBerry.png`)
 
@@ -443,8 +408,8 @@ export default function EncounterScreen(props) {
               </div>
             </div>
           </div>
-          {/* <div className="player-section d-flex justify-content-center"> */}
-            {/* <PlayerThrowing />
+          <div className="player-section d-flex justify-content-center">
+            <PlayerThrowing />
             <div className="ball-container"></div>
             <div className="name-tag rounded p-1">
               <div className="name">
@@ -467,12 +432,12 @@ export default function EncounterScreen(props) {
             </div>
           </div>
           <div className="inventory-overlay w-100 d-flex justify-content-center align-items-center">
-            {/* {bagWindow && inventoryWindow()} */}
-          {/* </div> */}
+            {bagWindow && inventoryWindow()}
+          </div>
         </div>
         <div className="battle-interface row w-100 p-3">
           <div className="system-message rounded col-6 p-3 d-flex justify-content-left align-items-center">
-            {/* {systemMessage} */}
+            {systemMessage}
           </div>
           <div className="inferface-container col-6">
             {/* <div className="button rounded"><img className="interface-pokeball-image" src={`/pokeballs/${currentPokeball.name}/idle.png`} /><h2>Capture</h2></div> */}

@@ -45,12 +45,13 @@ function App() {
     dispatch(SET_COLLISION(collision))
     dispatch(SET_GRASS(grass))
     dispatch(SET_ENCOUNTER(false))
-    dispatch(ADD_ITEM("berry"))
-    dispatch(ADD_ITEM("pokeball"))
-    dispatch(ADD_ITEM("pokeball"))
     dispatch(REMOVE_ITEM("pokeball"))
     dispatch(FETCH_ALL_POKEMON_DATA())
   }, [])
+
+  setTimeout(() => {
+    dispatch(SET_ENCOUNTER(true))
+  }, 2000);
 
   useEffect(()=>{
     dispatch(CURRENT_POKEBALL(findItem(inventory, "pokeball")))

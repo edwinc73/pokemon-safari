@@ -39,13 +39,14 @@ export const setItemIndex = (state = "", action) => {
 export const setCurrentPokeball = (state = "", action) => {
   switch (action.type) {
     case actions.SELECT_POKEBALL:
+      console.log(action)
       return action.payload
     default:
       return state
   }
 }
 
-export const SetBait = (state = "", action) => {
+export const setBait = (state = "", action) => {
   switch (action.type) {
     case actions.SELECT_BAIT:
       return action.payload
