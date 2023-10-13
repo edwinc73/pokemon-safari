@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { nanoid, random } from 'nanoid';
 import { useDispatch, useSelector } from 'react-redux'
-import { selectAllPokemon, selectCollisionCoord, selectEncounter, selectPosition, selectPokemonEncounter, selectInventory} from './selectors/selectors'
+import { selectAllPokemon, selectCollisionCoord, selectEncounter, selectPosition, selectPokemonEncounter, selectInventory, selectLoading} from './selectors/selectors'
 import config  from "./constants/config.js";
 
 import './App.scss'
@@ -14,7 +14,7 @@ import { getEncounteredPokemon, randomPokemon, pokemonName, isShiny, setPokemonL
 // import Key from "../src/features/Key/Key"
 // import {getPokemonData, randomPokemon} from "./js/encounter"
 // import {mapCoord} from "./js/mapCoord.js"
-// import Loading from "../src/features/Loading/Loading"
+import Loading from "../src/components/Loading/Loading"
 
 
 
@@ -39,6 +39,7 @@ function App() {
   const collisionCoord = useSelector(selectCollisionCoord)
   const encounter = useSelector(selectEncounter)
   const pokemonEncounter = useSelector(selectPokemonEncounter)
+  const loading = useSelector(selectLoading)
 
   useEffect(()=>{
     //      initialize map
@@ -56,6 +57,12 @@ function App() {
   useEffect(()=>{
     dispatch(CURRENT_POKEBALL(findItem(inventory, "pokeball")))
     dispatch(CURRENT_BAIT(findItem(inventory, "berry")))
+  }, [encounter])
+
+  useEffect(() => {
+    if(encounter){
+      dispatch(SET_LOADING(true))
+    }
   }, [encounter])
 
 
@@ -183,9 +190,7 @@ function App() {
         <div className="game-container">
           {safariMap}
           <EncounterScreen />
-          {/* <Loading
-            encounter = {encounter}
-          /> */}
+          <Loading />
         </div>
         {/* <Key
           directionKeys = {directionKeys}

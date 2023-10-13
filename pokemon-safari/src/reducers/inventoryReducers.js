@@ -30,7 +30,7 @@ export const updateItemReducer = (state= "", action) => {
 export const setItemIndex = (state = "", action) => {
   switch (action.type) {
     case actions.BROWSE_ITEM:
-      return action.payload
+      return state + action.payload > 5 ? state : state + action.payload
     default:
       return state
   }
@@ -39,7 +39,6 @@ export const setItemIndex = (state = "", action) => {
 export const setCurrentPokeball = (state = "", action) => {
   switch (action.type) {
     case actions.SELECT_POKEBALL:
-      console.log(action)
       return action.payload
     default:
       return state

@@ -5,10 +5,12 @@ import "./EncounterScreen.scss"
 
 import config from '../../constants/config'
 
+import InventoryInterface from '../InventoryInterface'
+
 import { selectBagWindow, selectEncounter, selectInventory, selectPokemonEncounter, selectSystemMessage, selectCurrentItemIndex, selectCurrentPokeball, selectCurrentBait, selectCurrentInterfaceIndex } from "../../selectors/selectors"
 import updateInventory from '../../customHook/updateInventory'
 import navigateInterface from '../../customHook/navigateInterface'
-import { INTERFACE_INDEX, SELECT_ITEM_INDEX } from "../../actions/actionsCreator.js"
+import { INTERFACE_INDEX, SELECT_ITEM_INDEX, SET_LOADING } from "../../actions/actionsCreator"
 
 import {PlayerThrowing} from "../Player/Player"
 import { hasItem } from '../../js/inventory'
@@ -46,22 +48,22 @@ export default function EncounterScreen(props) {
     dispatch(INTERFACE_INDEX(0))
   },[pokemon])
 
-  // useEffect(() => {
+  useEffect(() => {
+    const loadImage = async () => {
+      if(encounter){
+        const image = new Image
+        image.src = pokemon.sprite
 
-  //   // check if image has been loaded
-  //   if(encounteredPokemon){
-  //     const image = new Image
-  //     image.src = isShiny ? shinySprite.front : normalSprite.front
-
-  //     image.onload = ()=> {
-  //       setTimeout(() => {
-  //         setLoading(false)
-  //         const loadingScreen = document.querySelector(".loading")
-  //         loadingScreen.classList.remove("loading-fade-in")
-  //       }, 2000);
-  //       }
-  //   }
-  // }, [encounteredPokemon])
+        await new Promise((res)=> {
+          image.onload = res
+          setTimeout(() => {
+            dispatch(SET_LOADING(false))
+          }, 2000);
+        })
+      }
+    }
+    loadImage()
+  }, [encounter])
 
   // useEffect(() => {
   //   if (bagWindow) {
@@ -123,7 +125,7 @@ export default function EncounterScreen(props) {
 
   useEffect(()=> {
     dispatch(INTERFACE_INDEX(0))
-  },[pokemon])
+  },[encounter])
 
   useEffect(()=>{
     if (pokemon) {
@@ -140,7 +142,7 @@ export default function EncounterScreen(props) {
     return () => {
       document.removeEventListener("keyup", handleInterfaceKeyDown);
     };
-  }, [pokemon, bagWindow, lastMoveTime]);
+  }, [encounter, pokemon, bagWindow, lastMoveTime, currentInterfaceIndex]);
 
   // const [systemMessage, setSystemMessage] = useState(messages.encounter)
 
@@ -162,11 +164,6 @@ export default function EncounterScreen(props) {
   //   const attempt =  Math.floor(Math.random() * maxCatchChance)
   //   return attempt + pokeballValue > base_experience * levelAdjuster
   // }
-
-  // // set pokemon level
-  // useEffect(() => {
-  //   setPokemonLevel(pokemonMinimumLevel + Math.floor(Math.random() * 80))
-  // }, [encounteredPokemon])
 
   // const flashAnimation = (node) => {
   //   node.classList.add("flash")
@@ -342,36 +339,6 @@ export default function EncounterScreen(props) {
 
   // // styles
 
-  const inventoryWindow = () => {
-    const inventoryCategories = Object.keys(inventory)
-    const pokeballsCategories = Object.keys(inventory[inventoryCategories[0]])
-    const baitsCategories = Object.keys(inventory[inventoryCategories[1]])
-
-    return (
-      <div className="inventory d-flex flex-column">
-      {pokeballsCategories.map((itemName) => {
-        const pokeball = inventory.pokeballs[itemName]
-        return(
-          <div key={itemName+"container"} className="pokeball-section item d-flex flex-column justify-content-center">
-            <div className="item-image" id={itemName}></div>
-            <span className='d-flex justify-content-between'><h3 className='inventory-item'>{itemName}</h3> <h3>x {pokeball.quantity}</h3></span>
-          </div>
-        )
-      })}
-      <div className="bag-split w-100"></div>
-      {baitsCategories.map((itemName) => {
-        const bait = inventory.baits[itemName]
-        return(
-          <div key={itemName+"container"} className="bait-section item d-flex flex-column justify-content-center">
-            <div className="item-image" id={itemName}></div>
-            <span className='d-flex justify-content-between'><h3 className='inventory-item'>{itemName}</h3> <h3>x {bait.quantity}</h3></span>
-          </div>
-        )
-      })}
-    </div>
-    )
-  }
-
   // const [berryImage, setBerryImage] = useState(`/berry/RazzBerry.png`)
 
   // useEffect(()=>{
@@ -432,7 +399,7 @@ export default function EncounterScreen(props) {
             </div>
           </div>
           <div className="inventory-overlay w-100 d-flex justify-content-center align-items-center">
-            {bagWindow && inventoryWindow()}
+            {bagWindow && <InventoryInterface />}
           </div>
         </div>
         <div className="battle-interface row w-100 p-3">

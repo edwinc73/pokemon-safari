@@ -1,8 +1,9 @@
 import config from '../constants/config'
 
 import { useDispatch, useSelector } from 'react-redux'
-import { INTERFACE_INDEX } from "../actions/actionsCreator"
+import { INTERFACE_INDEX, SET_BAGWINDOW } from "../actions/actionsCreator"
 import { selectBagWindow, selectCurrentBait, selectCurrentInterfaceIndex, selectPokemonEncounter } from '../selectors/selectors';
+import { findItem, hasItem } from "../js/inventory"
 
 let lastMoveTime = 0;
 
@@ -12,8 +13,10 @@ export default function navigateInterface () {
   const currentBait = useSelector(selectCurrentBait)
   const bagWindow = useSelector(selectBagWindow)
   const pokemon = useSelector(selectPokemonEncounter)
+  // console.log(currentBait)
 
   const handleInterfaceKeyDown = (e) => {
+    console.log(currentInterfaceIndex)
     const currentTime = new Date().getTime();
     if (currentTime - lastMoveTime < config.debounceTime) {
       return;
@@ -35,19 +38,23 @@ export default function navigateInterface () {
           case "z":
             switch (currentInterfaceIndex) {
               case 0:
-                setThrow()
+                // setThrow()
+                console.log("throwing pokeball")
               break;
               case 1:
-                if(currentBait && hasItem(currentBait)){
-                  setUseBerry(true)
-                } else if(!currentBait) {
-                  alert("Please select berry")
-                } else if (!hasItem(currentBait)){
-                  alert("No more berries!")
-                }
+                console.log("Using berry")
+                // if(currentBait && hasItem(currentBait)){
+                  // setUseBerry(true)
+                // } else if(!currentBait) {
+                //   alert("Please select berry")
+                // } else if (!hasItem(currentBait)){
+                //   alert("No more berries!")
+                // }
               break;
               case 2:
-                openBag()
+                // openBag()
+                console.log("open bag")
+                dispatch(SET_BAGWINDOW(true))
               break;
               case 3:
                 run()

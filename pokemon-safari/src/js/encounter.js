@@ -19,7 +19,6 @@ export const getEncounteredPokemon = async (pokemonUrl) =>{
       throw new Error('Network response was not ok');
     }
     const data = await response.json();
-    console.log(data && "data loaded")
     return data;
   } catch (error) {
     console.error("Error occured", error)
@@ -40,3 +39,11 @@ export const pokemonName = (name) => {
 export const isShiny = () => Math.floor(Math.random() * 100) < config.shinyChance
 
 export const setPokemonLevel = () => config.pokemonMinimumLevel + Math.floor(Math.random() * 80)
+
+// custom hook
+export const isCaught = () => {
+  const pokeballValue = currentPokeball.value
+  const levelAdjuster = ((pokemonLevel / 100) * maxLevelModifier) + 1
+  const attempt =  Math.floor(Math.random() * maxCatchChance)
+  return attempt + pokeballValue > base_experience * levelAdjuster
+}
