@@ -47,3 +47,21 @@ export const isCaught = () => {
   const attempt =  Math.floor(Math.random() * maxCatchChance)
   return attempt + pokeballValue > base_experience * levelAdjuster
 }
+
+export const randomCatchingTime = () => {
+  const maxCatchingTime = 2000 + 2000/3
+  let randomTime = Math.random()
+  if(wasCaught){
+    return randomTime > 0.9 ? 2000 / 3 : maxCatchingTime
+  }
+
+  if(randomTime > 0.8){
+    return 500
+  } else if (randomTime > 0.65){
+    return 2000 / 3
+  } else if (randomTime > 0.3){
+    return 2000 / 3 * 2
+  } else {
+    return maxCatchingTime
+  }
+}

@@ -27,10 +27,10 @@ export const updateItemReducer = (state= "", action) => {
   }
 }
 
-export const setItemIndex = (state = "", action) => {
+export const setItemIndex = (state = 0, action) => {
   switch (action.type) {
     case actions.BROWSE_ITEM:
-      return state + action.payload > 5 ? state : state + action.payload
+      return (state + action.payload > 5 || state + action.payload < 0)? state : state + action.payload
     default:
       return state
   }

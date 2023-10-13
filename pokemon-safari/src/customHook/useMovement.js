@@ -16,7 +16,7 @@ const useMovement = () => {
   const position = useSelector(selectPosition)
 
   const handleMovement = (e) => {
-
+    e.stopPropagation();
     //      debounce keypresses
     const currentTime = new Date().getTime();
     if (currentTime - lastMoveTime < debounceTime) return;

@@ -20,7 +20,7 @@ import Loading from "../src/components/Loading/Loading"
 
 //      redux
 import store from "./store/index"
-import {SET_LOADING, SET_COLLISION, SET_GRASS, SET_POSITION, SET_ENCOUNTER, ADD_POKEMON, NEW_POKEMON, ADD_ITEM, REMOVE_ITEM, FETCH_ALL_POKEMON_DATA, CURRENT_POKEBALL, CURRENT_BAIT} from "./actions/actionsCreator"
+import {SET_LOADING, SET_COLLISION, SET_GRASS, SET_POSITION, SET_ENCOUNTER, ADD_POKEMON, NEW_POKEMON, ADD_ITEM, REMOVE_ITEM, FETCH_ALL_POKEMON_DATA, CURRENT_POKEBALL, CURRENT_BAIT, SET_BAGWINDOW} from "./actions/actionsCreator"
 
 //      data
 import { collision } from "../data/collision-map"
@@ -46,13 +46,14 @@ function App() {
     dispatch(SET_COLLISION(collision))
     dispatch(SET_GRASS(grass))
     dispatch(SET_ENCOUNTER(false))
-    dispatch(REMOVE_ITEM("pokeball"))
     dispatch(FETCH_ALL_POKEMON_DATA())
   }, [])
 
+
+// test
   setTimeout(() => {
     dispatch(SET_ENCOUNTER(true))
-  }, 2000);
+  }, 1000);
 
   useEffect(()=>{
     dispatch(CURRENT_POKEBALL(findItem(inventory, "pokeball")))
@@ -64,8 +65,6 @@ function App() {
       dispatch(SET_LOADING(true))
     }
   }, [encounter])
-
-
 
   useEffect(()=>{
     if (!collisionCoord) return;
@@ -90,8 +89,6 @@ function App() {
     };
     getData()
   }, [encounter]);
-
-  // console.log(store.getState())
 
   //   // loading pokemon in encounter screen
 

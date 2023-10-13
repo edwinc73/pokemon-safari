@@ -37,7 +37,9 @@ const initialState = {
     }
     ],
     etc:[],
-  }
+  },
+  currentPokeball:{name: 'pokeball', quantity: 9, value: 0, rarity: 1},
+  currentBait: {name: 'berry', quantity: 5, value: 5}
 }
 
 const store = configureStore({
@@ -45,5 +47,7 @@ const store = configureStore({
   preloadedState: initialState,
   middleware: [thunk]
 });
+
+console.log(store.getState())
 
 export default store;

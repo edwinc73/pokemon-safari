@@ -8,7 +8,7 @@ export const selectInventory = (state) => state.inventory
 export const selectBagWindow = (state) => state.bagWindow
 export const selectSystemMessage = (state) => state.systemMessage
 export const selectCurrentItemIndex  = (state) => state.currentItemIndex
-export const selectCurrentPokeball = (state) => state.selectCurrentPokeball
+export const selectCurrentPokeball = (state) => state.currentPokeball
 export const selectCurrentBait = (state) => state.currentBait
 export const selectCurrentInterfaceIndex =(state) => state.currentInterfaceIndex
 export const selectLoading = (state) => state.loading

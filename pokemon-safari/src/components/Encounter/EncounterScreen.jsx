@@ -5,7 +5,7 @@ import "./EncounterScreen.scss"
 
 import config from '../../constants/config'
 
-import InventoryInterface from '../InventoryInterface'
+import InventoryInterface from '../InventoryInterface/InventoryInterface'
 
 import { selectBagWindow, selectEncounter, selectInventory, selectPokemonEncounter, selectSystemMessage, selectCurrentItemIndex, selectCurrentPokeball, selectCurrentBait, selectCurrentInterfaceIndex } from "../../selectors/selectors"
 import updateInventory from '../../customHook/updateInventory'
@@ -15,6 +15,7 @@ import { INTERFACE_INDEX, SELECT_ITEM_INDEX, SET_LOADING } from "../../actions/a
 import {PlayerThrowing} from "../Player/Player"
 import { hasItem } from '../../js/inventory'
 import { setCurrentInterfaceIndex } from '../../reducers/gameSystemReducers'
+import { current } from '@reduxjs/toolkit'
 
 let lastMoveTime = 0;
 
@@ -32,7 +33,6 @@ export default function EncounterScreen(props) {
   const currentPokeball = useSelector(selectCurrentPokeball)
   const currentBait = useSelector(selectCurrentBait)
   const currentInterfaceIndex = useSelector(selectCurrentInterfaceIndex)
-
 
   //      style
   const encounterStyle = {
@@ -65,63 +65,7 @@ export default function EncounterScreen(props) {
     loadImage()
   }, [encounter])
 
-  // useEffect(() => {
-  //   if (bagWindow) {
-  //     const items = document.querySelectorAll(".inventory>.item")
-  //     // remove active
-  //     items.forEach(item => {
-  //       if(item.classList.contains("active")){
-  //         item.classList.remove("active")
-  //       }
-  //     })
-  //     // add active
-  //     items[itemIndex].classList.add("active")
-  //   }
-  // }, [bagWindow, itemIndex])
-
-  // useEffect(() => {
-  //   const navigateInventory = async (e) => {
-  //     const pokeballs = Object.keys(inventory.pokeballs)
-  //     const baits = inventory.baits
-  //     if(bagWindow){
-  //       switch (e.key) {
-  //         case "ArrowDown":
-  //           await setCurrentItemIndex(prev => prev + 1 > 5 ? 5 : prev + 1)
-  //         break;
-  //         case "ArrowUp":
-  //           await setCurrentItemIndex(prev => prev - 1 < 0 ? 0 : prev - 1)
-  //         break;
-  //         case "x":
-  //           await closeBag()
-  //         break;
-  //         case "z":
-  //           if(currentItemIndex < 3){
-  //             await setCurrentPokeball(inventory.pokeballs[pokeballs[currentItemIndex]])
-  //             await closeBag()
-  //           } else {
-  //             if(currentItemIndex == 4){
-  //               await setCurrentBait(baits.berry)
-  //             } else {
-  //               await setCurrentBait(baits.banana)
-  //             }
-  //             await closeBag()
-  //           }
-  //           break;
-  //         default:
-  //         break;
-  //       }
-  //     }
-  //   }
-
-  //   document.addEventListener("keydown", navigateInventory)
-  //   return () => {
-  //     document.removeEventListener("keydown", navigateInventory)
-
-  //   };
-  // },[bagWindow, inventory, currentItemIndex, closeBag])
-
   // // system interface navigation
-
 
   useEffect(()=> {
     dispatch(INTERFACE_INDEX(0))
@@ -138,13 +82,12 @@ export default function EncounterScreen(props) {
   },[pokemon, currentInterfaceIndex])
 
   useEffect(() => {
-    document.addEventListener("keyup", handleInterfaceKeyDown);
+    document.addEventListener("keydown", handleInterfaceKeyDown);
     return () => {
-      document.removeEventListener("keyup", handleInterfaceKeyDown);
+      document.removeEventListener("keydown", handleInterfaceKeyDown);
     };
-  }, [encounter, pokemon, bagWindow, lastMoveTime, currentInterfaceIndex]);
+  }, [encounter, pokemon, bagWindow, currentInterfaceIndex]);
 
-  // const [systemMessage, setSystemMessage] = useState(messages.encounter)
 
   // useEffect(() => {
   //   setSystemMessage(messages.encounter)
@@ -153,17 +96,6 @@ export default function EncounterScreen(props) {
   // //capture logic
   // const [throwing, setThrowing] = useState(false)
   // const [caught, setCaught] = useState(false)
-
-  // useEffect(() => {
-  //   setCaught(false)
-  // }, [encounteredPokemon])
-
-  // const isCaught = () => {
-  //   const pokeballValue = currentPokeball.value
-  //   const levelAdjuster = ((pokemonLevel / 100) * maxLevelModifier) + 1
-  //   const attempt =  Math.floor(Math.random() * maxCatchChance)
-  //   return attempt + pokeballValue > base_experience * levelAdjuster
-  // }
 
   // const flashAnimation = (node) => {
   //   node.classList.add("flash")
@@ -407,12 +339,9 @@ export default function EncounterScreen(props) {
             {systemMessage}
           </div>
           <div className="inferface-container col-6">
-            {/* <div className="button rounded"><img className="interface-pokeball-image" src={`/pokeballs/${currentPokeball.name}/idle.png`} /><h2>Capture</h2></div> */}
-            <div className="button rounded"><img className="interface-pokeball-image" /><h2>Capture</h2></div>
+            <div className="button rounded"><img className="interface-pokeball-image" src={`/pokeballs/${currentPokeball?.name}/idle.png`} /><h2>Capture</h2></div>
 
-            {/* <div className="button rounded"><img className="interface-pokeball-image" src={berryImage} style={berryStyle} /><h2>Berry</h2></div> */}
-            <div className="button rounded"><img className="interface-pokeball-image" /><h2>Berry</h2></div>
-
+            <div className="button rounded"><img className="interface-pokeball-image" src={`/berry/${currentBait?.name == "berry" ? "RazzBerry.png" : "NanabBerry.png"}`} /><h2>Berry</h2></div>
             <div className="button rounded"><img className="interface-pokeball-image interface-image-large" src="/bag.png" /><h2>Bag</h2></div>
             {/* <div className="button rounded" onClick={run}><img className="interface-pokeball-image" src="/run.png" /><h2>Run</h2></div> */}
             <div className="button rounded"><img className="interface-pokeball-image" src="/run.png" /><h2>Run</h2></div>

@@ -146,10 +146,11 @@
 .inventory-overlay{
   width: 100%;
   height: 100%;
+  transition: 0.25s cubic-bezier(0.215, 0.610, 0.355, 1);
 
   .pokeball-section, .bait-section{
     padding: 5px;
-    transition: 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+    transition: 0.25s cubic-bezier(0.19, 1, 0.22, 1);
   }
 
   .inventory{

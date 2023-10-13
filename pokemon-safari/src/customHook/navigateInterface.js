@@ -2,21 +2,21 @@ import config from '../constants/config'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { INTERFACE_INDEX, SET_BAGWINDOW } from "../actions/actionsCreator"
-import { selectBagWindow, selectCurrentBait, selectCurrentInterfaceIndex, selectPokemonEncounter } from '../selectors/selectors';
+import { selectBagWindow, selectCurrentInterfaceIndex, selectPokemonEncounter } from '../selectors/selectors';
 import { findItem, hasItem } from "../js/inventory"
+import useCapture from "../customHook/useCapture"
 
 let lastMoveTime = 0;
 
 export default function navigateInterface () {
   const dispatch = useDispatch()
   const currentInterfaceIndex = useSelector(selectCurrentInterfaceIndex)
-  const currentBait = useSelector(selectCurrentBait)
   const bagWindow = useSelector(selectBagWindow)
   const pokemon = useSelector(selectPokemonEncounter)
-  // console.log(currentBait)
+  const { capture } = useCapture()
 
   const handleInterfaceKeyDown = (e) => {
-    console.log(currentInterfaceIndex)
+    e.stopPropagation();
     const currentTime = new Date().getTime();
     if (currentTime - lastMoveTime < config.debounceTime) {
       return;
@@ -38,7 +38,7 @@ export default function navigateInterface () {
           case "z":
             switch (currentInterfaceIndex) {
               case 0:
-                // setThrow()
+                capture(0)
                 console.log("throwing pokeball")
               break;
               case 1:
@@ -52,8 +52,6 @@ export default function navigateInterface () {
                 // }
               break;
               case 2:
-                // openBag()
-                console.log("open bag")
                 dispatch(SET_BAGWINDOW(true))
               break;
               case 3:
