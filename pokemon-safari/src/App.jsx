@@ -1,177 +1,175 @@
 import React, { useEffect, useState } from 'react'
+import { nanoid, random } from 'nanoid';
+import { useDispatch, useSelector } from 'react-redux'
+import { selectAllPokemon, selectCollisionCoord, selectEncounter, selectPosition, selectPokemonEncounter, selectInventory, selectLoading, selectPokemonList} from './selectors/selectors'
+import config  from "./constants/config.js";
+
 import './App.scss'
 
-import Key from "../src/features/Key/Key"
-import {Player} from "../src/features/Player/Player"
-import { handleMovement } from './js/movement'
-import {getPokemonData, randomPokemon} from "./js/encounter"
-import {mapCoord} from "./js/mapCoord.js"
-import EncounterScreen from "./features/Encounter/EncounterScreen"
-import { getEncounteredPokemon } from "../src/js/encounter.js";
-import Loading from "../src/features/Loading/Loading"
+import {Player} from "../src/components/Player/Player"
+import useMovement from "./customHook/useMovement"
+import EncounterScreen from "./components/Encounter/EncounterScreen"
+import { getEncounteredPokemon, randomPokemon, pokemonName, isShiny, setPokemonLevel } from './js/encounter';
 
+// import Key from "../src/features/Key/Key"
+// import {getPokemonData, randomPokemon} from "./js/encounter"
+// import {mapCoord} from "./js/mapCoord.js"
+import Loading from "../src/components/Loading/Loading"
+
+
+
+//      redux
+import store from "./store/index"
+import {SET_LOADING, SET_COLLISION, SET_GRASS, SET_POSITION, SET_ENCOUNTER, ADD_POKEMON, NEW_POKEMON, ADD_ITEM, REMOVE_ITEM, FETCH_ALL_POKEMON_DATA, CURRENT_POKEBALL, CURRENT_BAIT, SET_BAGWINDOW, SYSTEM_MESSAGE} from "./actions/actionsCreator"
+
+//      data
+import { collision } from "../data/collision-map"
+import { grass } from "../data/grass-map.js"
+import { findItem } from './js/inventory';
 
 function App() {
-  const [direction, setDirection] = useState({
-    direction: "walk-down",
-    movementValue:{
-      x: -610,
-      y: -1150
-    }
-  })
+  const dispatch  = useDispatch()
+  const { backgroundSize } = config
+  const { handleMovement } = useMovement()
 
-  // loading
-  const [loading, setLoading] = useState(false);
+  //      Get all states from store
+  const inventory = useSelector(selectInventory)
+  const allPokemonData = useSelector(selectAllPokemon)
+  const position = useSelector(selectPosition)
+  const collisionCoord = useSelector(selectCollisionCoord)
+  const encounter = useSelector(selectEncounter)
+  const pokemonList = useSelector(selectPokemonList)
+  const pokemonEncounter = useSelector(selectPokemonEncounter)
+  const loading = useSelector(selectLoading)
+  // const pokemon = useSelector(selectPokemonEncounter)
 
-  // set map locations
-  const [collisionMap, setCollisionMap] = useState(()=>mapCoord(collisions))
-  const [grassMap, setGrassMap] = useState(()=>mapCoord(grassPatch))
-
-  // encounters
-  const [encounter, setEncounter] = useState(false)
-  const [pokemonList, setPokemonList] = useState([])
-  const [encounteredPokemon, setEncounteredPokemon] = useState("")
-
-  //inventory
-
-  const [inventory, setInventory] = useState({
-     pokeballs:{
-        pokeball: {
-          name: "pokeball",
-          quantity: 10,
-          value: 0,
-          rarity: 1
-        },
-        greatball: {
-          name: "greatball",
-          quantity: 0,
-          value: 20,
-          rarity: 0.4
-        },
-        ultraball: {
-          name: "ultraball",
-          quantity: 0,
-          value: 60,
-          rarity: 0.2
-        },
-        masterball: {
-          name: "masterball",
-          quantity: 0,
-          value: 4000,
-          rarity: 0.025
-        }
-      },
-    baits:{
-      berry:{
-        name: "berry",
-        quantity : 5,
-        value: 5
-      },
-      banana:{
-        name: "banana",
-        quantity : 0,
-        value: 15
-      }
-    },
-    etc:[]
-  })
-
-  // caught pokemon
-  const [caughtPokemonList, setCaughtPokemonList] = useState([])
-
-  //get all pokemon
   useEffect(()=>{
-    const fetchData = async () => {
-      const data = await getPokemonData();
-      setPokemonList(data);
-    }
-    fetchData();
-  },[])
-
-  // loading pokemon in encounter screen
-
-  useEffect(() => {
-    if(encounter){
-      setLoading(true)
-    }
-  }, [encounter, encounteredPokemon])
-
-  // loading screen fade in
-
-  useEffect(()=> {
-    if(encounter){
-      const loadingScreen = document.querySelector(".loading")
-      loadingScreen.classList.add("loading-fade-in")
-    }
-  }, [encounter])
-
-
-  // movement logic
-  useEffect(()=>{
-    setDirection({
-      direction: "walk-down",
-      movementValue:{
-        x: parseFloat(document.querySelector(".game-window").style.left) || 0,
-        y: parseFloat(document.querySelector(".game-window").style.top) || 0
-      }
-    })
+    //      initialize map
+    dispatch(SET_COLLISION(collision))
+    dispatch(SET_GRASS(grass))
+    dispatch(SET_ENCOUNTER(false))
+    dispatch(FETCH_ALL_POKEMON_DATA())
   }, [])
 
-  useEffect(()=>{
-    const encounterScreenDOM = document.querySelector("#encounter-screen")
-    if(encounter){
-      const fetchData = async  () => {
-        const currentPokemon = await getEncounteredPokemon(randomPokemon(pokemonList))
-        setEncounteredPokemon(currentPokemon)
-      }
 
-      fetchData();
-      setTimeout(() => {
-        encounterScreenDOM.classList.add("fade-in");
-      }, 500);
-    } else {
-      if(encounterScreenDOM.classList.contains("fade-in")){
-        encounterScreenDOM.classList.remove("fade-in");
-      }
-    }
-    // on encounter change the game screen to encounter screen
+// test
+  // setTimeout(() => {
+  //   dispatch(SET_ENCOUNTER(true))
+  // }, 1000);
+
+  useEffect(()=>{
+    dispatch(CURRENT_POKEBALL(findItem(inventory, "pokeball")))
+    dispatch(CURRENT_BAIT(findItem(inventory, "berry")))
+  }, [encounter])
+
+  useEffect(() => {
+    encounter && dispatch(SET_LOADING(true))
   }, [encounter])
 
   useEffect(()=>{
-    const handleMovementWithState = handleMovement(direction, setDirection, keyNames, collisionMap, grassMap, setEncounter, encounter, inventory
-      ,setInventory);
-    document.addEventListener('keydown', handleMovementWithState);
+    if (!collisionCoord) return;
+
+    document.addEventListener('keydown', handleMovement);
     return () => {
-      document.removeEventListener('keydown', handleMovementWithState);
+      document.removeEventListener('keydown', handleMovement);
     };
-  }, [encounter, direction])
+  }, [collisionCoord])
 
-  const directionKeys = ["↑","←","↓","→"]
-  const keyNames = ["ArrowUp","ArrowLeft", "ArrowDown", "ArrowRight"]
-  const actionKeys = ["z", "x"]
+  useEffect(() => {
+    const getData = async () => {
+      if (allPokemonData.length === 0 || !encounter) return;
+      try {
+        const pokemonData = randomPokemon(allPokemonData)
+        const {name, sprites, base_experience : baseExperience} = await getEncounteredPokemon(pokemonData)
+        const shiny = isShiny()
+        dispatch(NEW_POKEMON(nanoid(), pokemonName(name), shiny, shiny ? sprites.front_shiny : sprites.front_default, setPokemonLevel(), baseExperience || 255))
+      } catch (error) {
+        console.error("error", error);
+      }
+    };
+    getData()
+  }, [encounter]);
 
-  const backgroundSize = {
-    width: 1120 * 4,
-    height: 608 * 4
-  }
+  //   // loading pokemon in encounter screen
+
+  //   useEffect(() => {
+//     if(encounter){
+//       setLoading(true)
+//     }
+//   }, [encounter, encounteredPokemon])
+
+//   // loading screen fade in
+
+//   useEffect(()=> {
+//     if(encounter){
+//       const loadingScreen = document.querySelector(".loading")
+//       loadingScreen.classList.add("loading-fade-in")
+//     }
+//   }, [encounter])
+
+
+//   // movement logic
+//   useEffect(()=>{
+//     setDirection({
+//       direction: "walk-down",
+//       movementValue:{
+//         x: parseFloat(document.querySelector(".game-window").style.left) || 0,
+//         y: parseFloat(document.querySelector(".game-window").style.top) || 0
+//       }
+//     })
+//   }, [])
+
+//   useEffect(()=>{
+//     const encounterScreenDOM = document.querySelector("#encounter-screen")
+//     if(encounter){
+//       const fetchData = async  () => {
+//         const currentPokemon = await getEncounteredPokemon(randomPokemon(pokemonList))
+//         setEncounteredPokemon(currentPokemon)
+//       }
+
+//       fetchData();
+//       setTimeout(() => {
+//         encounterScreenDOM.classList.add("fade-in");
+//       }, 500);
+//     } else {
+//       if(encounterScreenDOM.classList.contains("fade-in")){
+//         encounterScreenDOM.classList.remove("fade-in");
+//       }
+//     }
+//     // on encounter change the game screen to encounter screen
+//   }, [encounter])
+
+//   useEffect(()=>{
+//     const handleMovementWithState = handleMovement(direction, setDirection, keyNames, collisionMap, grassMap, setEncounter, encounter, inventory
+//       ,setInventory);
+//     document.addEventListener('keydown', handleMovementWithState);
+//     return () => {
+//       document.removeEventListener('keydown', handleMovementWithState);
+//     };
+//   }, [encounter, direction])
+
+//   const directionKeys = ["↑","←","↓","→"]
+//   const keyNames = ["ArrowUp","ArrowLeft", "ArrowDown", "ArrowRight"]
+//   const actionKeys = ["z", "x"]
+
 
   const backgroundStyle ={
-    top: `${direction.movementValue.y}px`,
-    left: `${direction.movementValue.x}px`,
+    top: `${position.movementValue.y}px`,
+    left: `${position.movementValue.x}px`,
     width: `${backgroundSize.width}px`,
     height: ` ${backgroundSize.height}px`
   }
 
-  useEffect(()=>{
-    const gameScreen = document.querySelector(".game")
-    if(encounter){
-      setTimeout(() => {
-        gameScreen.classList.add("fade-out")
-      }, 2000);
-    } else {
-      gameScreen.classList.remove("fade-out")
-    }
-  },[encounter])
+//   useEffect(()=>{
+//     const gameScreen = document.querySelector(".game")
+//     if(encounter){
+//       setTimeout(() => {
+//         gameScreen.classList.add("fade-out")
+//       }, 2000);
+//     } else {
+//       gameScreen.classList.remove("fade-out")
+//     }
+//   },[encounter])
 
   const safariMap = (
   <div className="game d-flex">
@@ -179,7 +177,7 @@ function App() {
     <div className="game-window p-5" style={backgroundStyle}>
       <img src="/game-map.png" alt="" />
     </div>
-      <Player direction = {direction.direction} />
+      <Player direction = {position.direction} />
   </div>
   )
 
@@ -188,25 +186,14 @@ function App() {
       <div className="background-color">
         <div className="game-container">
           {safariMap}
-          <EncounterScreen
-            encounteredPokemon = {encounteredPokemon}
-            setEncounter = {setEncounter}
-            setEncounteredPokemon = {setEncounteredPokemon}
-            setCaughtPokemonList = {setCaughtPokemonList}
-            inventory = {inventory}
-            setInventory = {setInventory}
-            setLoading = {setLoading}
-            loading = {loading}
-          />
-          <Loading
-            encounter = {encounter}
-          />
+          <EncounterScreen />
+          <Loading />
         </div>
-        <Key
+        {/* <Key
           directionKeys = {directionKeys}
           keyNames = {keyNames}
           actionKeys = {actionKeys}
-        />
+        /> */}
       </div>
     </>
   )
