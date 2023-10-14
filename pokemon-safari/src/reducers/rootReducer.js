@@ -3,7 +3,7 @@ import { AddPokemonReducer, encounterPokemonReducer } from "./encounteredPokemon
 import {} from "./pokemonListReducers"
 import { fetchAllPokemonDataReducer, setCollisionCoord, setGrassCoord } from "./initializeReducers"
 import { setBagWindowReducer, setCurrentInterfaceIndex, setEncounteredReducer, setLoadingReducer, setSystemMessagesReducer } from "./gameSystemReducers"
-import { setCurrentPokeball, setItemIndex, updateItemReducer, setBait } from "./inventoryReducers"
+import { setCurrentPokeball, setItemIndex, updateItemReducer, setBait, setActiveBait, setThrowPokeball } from "./inventoryReducers"
 import { setPositionReducer } from "./playerReducers"
 
 const rootReducer = combineReducers({
@@ -22,6 +22,8 @@ const rootReducer = combineReducers({
   currentPokeball: setCurrentPokeball,
   currentBait: setBait,
   systemMessage: setSystemMessagesReducer,
+  useBait: setActiveBait,
+  thrown: setThrowPokeball
 });
 
 export default rootReducer;

@@ -13,7 +13,7 @@ export const AddPokemonReducer = (state = [], action) => {
   switch (action.type) {
     case actions.POKEMON_CAPTURED:
       return [
-        ...state, action.payload
+        ...state, { ...action.payload, caught:true }
       ]
     default:
       return state

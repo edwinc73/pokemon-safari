@@ -1,3 +1,4 @@
+import { current } from "@reduxjs/toolkit"
 import config from "../constants/config"
 const pokemonApi = "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1292"
 
@@ -41,27 +42,30 @@ export const isShiny = () => Math.floor(Math.random() * 100) < config.shinyChanc
 export const setPokemonLevel = () => config.pokemonMinimumLevel + Math.floor(Math.random() * 80)
 
 // custom hook
-export const isCaught = () => {
+export const isCaught = (pokemon, currentPokeball, currentBait, useBait) => {
   const pokeballValue = currentPokeball.value
-  const levelAdjuster = ((pokemonLevel / 100) * maxLevelModifier) + 1
-  const attempt =  Math.floor(Math.random() * maxCatchChance)
-  return attempt + pokeballValue > base_experience * levelAdjuster
+  const baitValue = useBait ? currentBait.value : 0
+  const levelAdjuster = ((pokemon.level / 100) * config.maxLevelModifier) + 1
+  const attempt =  Math.floor(Math.random() * config.maxCatchChance)
+  console.log(pokeballValue , baitValue)
+  return attempt + pokeballValue + baitValue > pokemon.baseExperience * levelAdjuster
 }
 
-export const randomCatchingTime = () => {
-  const maxCatchingTime = 2000 + 2000/3
+export const randomCatchingTime = (caught) => {
   let randomTime = Math.random()
-  if(wasCaught){
-    return randomTime > 0.9 ? 2000 / 3 : maxCatchingTime
-  }
-
-  if(randomTime > 0.8){
+  if(caught){
+    return randomTime > 0.9 ? 2000 / 3 : config.maxCatchingTime
+  } else if (randomTime > 0.8){
     return 500
   } else if (randomTime > 0.65){
     return 2000 / 3
   } else if (randomTime > 0.3){
     return 2000 / 3 * 2
   } else {
-    return maxCatchingTime
+    return config.maxCatchingTime
   }
+}
+
+export const run = () => {
+  return config.runChance > Math.floor(Math.random() * 100)
 }

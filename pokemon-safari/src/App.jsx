@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { nanoid, random } from 'nanoid';
 import { useDispatch, useSelector } from 'react-redux'
-import { selectAllPokemon, selectCollisionCoord, selectEncounter, selectPosition, selectPokemonEncounter, selectInventory, selectLoading} from './selectors/selectors'
+import { selectAllPokemon, selectCollisionCoord, selectEncounter, selectPosition, selectPokemonEncounter, selectInventory, selectLoading, selectPokemonList} from './selectors/selectors'
 import config  from "./constants/config.js";
 
 import './App.scss'
@@ -20,7 +20,7 @@ import Loading from "../src/components/Loading/Loading"
 
 //      redux
 import store from "./store/index"
-import {SET_LOADING, SET_COLLISION, SET_GRASS, SET_POSITION, SET_ENCOUNTER, ADD_POKEMON, NEW_POKEMON, ADD_ITEM, REMOVE_ITEM, FETCH_ALL_POKEMON_DATA, CURRENT_POKEBALL, CURRENT_BAIT, SET_BAGWINDOW} from "./actions/actionsCreator"
+import {SET_LOADING, SET_COLLISION, SET_GRASS, SET_POSITION, SET_ENCOUNTER, ADD_POKEMON, NEW_POKEMON, ADD_ITEM, REMOVE_ITEM, FETCH_ALL_POKEMON_DATA, CURRENT_POKEBALL, CURRENT_BAIT, SET_BAGWINDOW, SYSTEM_MESSAGE} from "./actions/actionsCreator"
 
 //      data
 import { collision } from "../data/collision-map"
@@ -38,8 +38,10 @@ function App() {
   const position = useSelector(selectPosition)
   const collisionCoord = useSelector(selectCollisionCoord)
   const encounter = useSelector(selectEncounter)
+  const pokemonList = useSelector(selectPokemonList)
   const pokemonEncounter = useSelector(selectPokemonEncounter)
   const loading = useSelector(selectLoading)
+  // const pokemon = useSelector(selectPokemonEncounter)
 
   useEffect(()=>{
     //      initialize map
@@ -51,9 +53,9 @@ function App() {
 
 
 // test
-  setTimeout(() => {
-    dispatch(SET_ENCOUNTER(true))
-  }, 1000);
+  // setTimeout(() => {
+  //   dispatch(SET_ENCOUNTER(true))
+  // }, 1000);
 
   useEffect(()=>{
     dispatch(CURRENT_POKEBALL(findItem(inventory, "pokeball")))
@@ -61,9 +63,7 @@ function App() {
   }, [encounter])
 
   useEffect(() => {
-    if(encounter){
-      dispatch(SET_LOADING(true))
-    }
+    encounter && dispatch(SET_LOADING(true))
   }, [encounter])
 
   useEffect(()=>{
@@ -79,8 +79,8 @@ function App() {
     const getData = async () => {
       if (allPokemonData.length === 0 || !encounter) return;
       try {
-        const pokemon = randomPokemon(allPokemonData)
-        const {name, sprites, base_experience : baseExperience} = await getEncounteredPokemon(pokemon)
+        const pokemonData = randomPokemon(allPokemonData)
+        const {name, sprites, base_experience : baseExperience} = await getEncounteredPokemon(pokemonData)
         const shiny = isShiny()
         dispatch(NEW_POKEMON(nanoid(), pokemonName(name), shiny, shiny ? sprites.front_shiny : sprites.front_default, setPokemonLevel(), baseExperience || 255))
       } catch (error) {

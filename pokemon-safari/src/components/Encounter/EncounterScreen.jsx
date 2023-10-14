@@ -7,20 +7,22 @@ import config from '../../constants/config'
 
 import InventoryInterface from '../InventoryInterface/InventoryInterface'
 
-import { selectBagWindow, selectEncounter, selectInventory, selectPokemonEncounter, selectSystemMessage, selectCurrentItemIndex, selectCurrentPokeball, selectCurrentBait, selectCurrentInterfaceIndex } from "../../selectors/selectors"
+import { selectBagWindow, selectEncounter, selectInventory, selectPokemonEncounter, selectSystemMessage, selectCurrentItemIndex, selectCurrentPokeball, selectCurrentBait, selectCurrentInterfaceIndex, selectThrown, selectUseBait } from "../../selectors/selectors"
 import updateInventory from '../../customHook/updateInventory'
 import navigateInterface from '../../customHook/navigateInterface'
-import { INTERFACE_INDEX, SELECT_ITEM_INDEX, SET_LOADING } from "../../actions/actionsCreator"
+import useCapture from '../../customHook/useCapture'
+import { ACTIVE_BAIT, CURRENT_BAIT, CURRENT_POKEBALL, INTERFACE_INDEX, SELECT_ITEM_INDEX, SET_LOADING, SYSTEM_MESSAGE } from "../../actions/actionsCreator"
 
 import {PlayerThrowing} from "../Player/Player"
-import { hasItem } from '../../js/inventory'
+import { findItem, hasItem } from '../../js/inventory'
 import { setCurrentInterfaceIndex } from '../../reducers/gameSystemReducers'
-import { current } from '@reduxjs/toolkit'
+import messages from '../../js/systemMessages'
 
 let lastMoveTime = 0;
 
 export default function EncounterScreen(props) {
   const dispatch = useDispatch()
+  const { capture } = useCapture()
   const {useItem, foundItem} = updateInventory()
   const { handleInterfaceKeyDown } = navigateInterface()
 
@@ -33,6 +35,8 @@ export default function EncounterScreen(props) {
   const currentPokeball = useSelector(selectCurrentPokeball)
   const currentBait = useSelector(selectCurrentBait)
   const currentInterfaceIndex = useSelector(selectCurrentInterfaceIndex)
+  const thrown = useSelector(selectThrown)
+  const useBait = useSelector(selectUseBait)
 
   //      style
   const encounterStyle = {
@@ -44,11 +48,17 @@ export default function EncounterScreen(props) {
   }
 
   useEffect(() => {
-    dispatch(SELECT_ITEM_INDEX(0))
-    dispatch(INTERFACE_INDEX(0))
+    pokemon && dispatch(SYSTEM_MESSAGE(messages(pokemon).encounter))
   },[pokemon])
 
   useEffect(() => {
+    if(encounter){
+      dispatch(SELECT_ITEM_INDEX(0))
+      dispatch(INTERFACE_INDEX(0))
+      dispatch(INTERFACE_INDEX(0))
+      dispatch(ACTIVE_BAIT(false))
+    }
+
     const loadImage = async () => {
       if(encounter){
         const image = new Image
@@ -65,11 +75,51 @@ export default function EncounterScreen(props) {
     loadImage()
   }, [encounter])
 
-  // // system interface navigation
+  useEffect(()=>{
+    dispatch(CURRENT_POKEBALL(findItem(inventory, currentPokeball.name)))
+    dispatch(CURRENT_BAIT(findItem(inventory, currentBait.name)))
+  }, [inventory])
 
   useEffect(()=> {
-    dispatch(INTERFACE_INDEX(0))
-  },[encounter])
+    if (new Date().getTime() - lastMoveTime < config.debounceTime) {
+      return;
+    } else {
+      thrown && capture()
+    }
+    lastMoveTime = new Date().getTime()
+  }, [thrown])
+
+
+  useEffect(() => {
+    //      animate berry use
+    const pokemonImage = document.querySelector("#pokemonImage")
+    const nameTag = document.querySelector(".wild-pokemon>.name-tag")
+    if(useBait){
+      const image = new Image
+      const berryImage = currentBait.name == "berry" ? "/berry/RazzBerry.png" : "/berry/NanabBerry.png"
+      image.src = berryImage
+      image.id = "pokemon-img"
+      image.style.width = "42px"
+      image.style.height = "42px"
+      nameTag.appendChild(image)
+
+      const berryFadeImage = new Image
+      berryFadeImage.src = berryImage
+      berryFadeImage.style.width = "100px"
+      berryFadeImage.style.height = "100px"
+
+      berryFadeImage.classList.add("berryFadeAnimation")
+      setTimeout(() => {
+        pokemonImage.removeChild(document.querySelector(".berryFadeAnimation"))
+      }, 3000);
+      pokemonImage.appendChild(berryFadeImage)
+    } else {
+      const domImage = document.querySelector(".wild-pokemon #pokemon-img")
+      nameTag.contains(domImage) && nameTag.removeChild(domImage)
+    }
+  }, [useBait])
+
+
 
   useEffect(()=>{
     if (pokemon) {
@@ -89,6 +139,7 @@ export default function EncounterScreen(props) {
   }, [encounter, pokemon, bagWindow, currentInterfaceIndex]);
 
 
+
   // useEffect(() => {
   //   setSystemMessage(messages.encounter)
   // }, [encounteredPokemon])
@@ -96,13 +147,6 @@ export default function EncounterScreen(props) {
   // //capture logic
   // const [throwing, setThrowing] = useState(false)
   // const [caught, setCaught] = useState(false)
-
-  // const flashAnimation = (node) => {
-  //   node.classList.add("flash")
-  //   setTimeout(() => {
-  //     node.classList.remove("flash")
-  //   }, 1500);
-  // }
 
   // // catching
 
@@ -112,161 +156,6 @@ export default function EncounterScreen(props) {
   //     await setThrowing(true)
   //     await updateInventory(currentPokeball, "pokeballs", "remove")
   //   }
-  // }
-
-  // useEffect(() => {
-  //   const pokemonImage = document.querySelector("#pokemonImage")
-  //   const pokeballName = currentPokeball.name
-
-  //   const setPokeBallImage =  (element, action) => {
-  //     element.classList.add(`catching${action ? "-"+action : ""}`)
-  //     element.style.backgroundImage = `url("/pokeballs/${pokeballName}/${action ? action[0].toUpperCase() + action.slice(1) : "Catching"}.png")`
-  //   }
-  //   if(throwing){
-  //     const playerThrowing = document.querySelector("#player-throwing")
-  //     const ballContainer = document.querySelector(".ball-container")
-  //     const pokemonBallAnimation = document.querySelector("#pokemonBallAnimation")
-
-  //     setSystemMessage(messages.throw)
-  //     playerThrowing.classList.add("throw")
-
-  //     ballContainer.classList.add("ball-animation")
-  //     ballContainer.style.backgroundImage = `url("/pokeballs/${pokeballName}/Throwing.png")`
-
-  //     const wasCaught = isCaught();
-  //     setCaught(wasCaught);
-
-  //     const maxCatchingTime = 2000 + 2000/3
-
-  //     const randomCatchingTime = () => {
-  //       let randomTime = Math.random()
-  //       if(wasCaught){
-  //         return randomTime > 0.9 ? 2000 / 3 : maxCatchingTime
-  //       }
-
-  //       if(randomTime > 0.8){
-  //         return 500
-  //       } else if (randomTime > 0.65){
-  //         return 2000 / 3
-  //       } else if (randomTime > 0.3){
-  //         return 2000 / 3 * 2
-  //       } else {
-  //         return maxCatchingTime
-  //       }
-  //     }
-
-  //     const randTime = randomCatchingTime()
-
-  //     setTimeout(() => {
-  //       if(wasCaught){
-  //         setTimeout(()=>{
-  //           const caughtPokemon = new CaughtPokemon(nanoid(), pokemonName, isShiny ? shinySprite.front : normalSprite.front, pokemonLevel, isShiny);
-  //           setCaughtPokemonList(prevState => [...prevState, caughtPokemon]);
-  //           setSystemMessage(messages.caught);
-  //           setTimeout(() => {
-  //             pokemonBallAnimation?.classList.remove("catching-success")
-  //             clearEncounter();
-  //           }, 3000);
-  //         }, randTime)
-  //       } else {
-  //           setSystemMessage(messages.failed);
-  //           setTimeout(() => {
-  //               setSystemMessage(messages.default);
-  //           }, randTime);
-  //       }
-  //     }, randTime);
-
-  //     setTimeout(() => {
-  //       ballContainer.classList.remove("ball-animation")
-  //       flashAnimation(pokemonImage)
-  //       pokemonImage.classList.add("unshow")
-  //       setPokeBallImage(pokemonBallAnimation, "")
-  //       setTimeout(() => {
-  //         if(wasCaught){
-  //           setPokeBallImage(pokemonBallAnimation, "success")
-  //         } else {
-  //           setPokeBallImage(pokemonBallAnimation, "fail")
-  //           setTimeout(() => {
-  //             pokemonBallAnimation.classList.remove("catching-fail")
-  //             flashAnimation(pokemonImage)
-  //             pokemonImage.classList.remove("unshow")
-  //           }, 500);
-  //         }
-  //         pokemonBallAnimation.classList.remove("catching")
-  //       }, randTime);
-  //     }, 925);
-
-  //     setTimeout(() => {
-  //         setThrowing(false);
-  //         playerThrowing.classList.remove("throw");
-  //         setUseBerry(false)
-  //     }, randTime + 930 + 500 + 2000);
-  //   }
-  // }, [throwing])
-
-
-  // // using berry
-
-  // const [berryValue, setBerryValue] = useState(0)
-  // const [useBerry, setUseBerry] = useState(false)
-
-  // useEffect(()=>{
-  //   if(currentBait != ""){
-  //     setBerryValue(currentBait.value)
-  //   } else {
-  //     setBerryValue(0)
-  //   }
-  // }, [currentBait, throwing])
-
-  // //use Berry
-
-  // useEffect(()=>{
-  //   const pokemonImage = document.querySelector("#pokemonImage")
-  //   const nameTag = document.querySelector(".wild-pokemon>.name-tag")
-
-  //   if(useBerry){
-  //     const image = new Image
-  //     image.src = berryImage
-  //     image.id = "pokemon-img"
-  //     image.style.width = "42px"
-  //     image.style.height = "42px"
-  //     nameTag.appendChild(image)
-
-  //     const berryFadeImage = new Image
-  //     berryFadeImage.src = berryImage
-  //     berryFadeImage.style.width = "100px"
-  //     berryFadeImage.style.height = "100px"
-
-  //     berryFadeImage.classList.add("berryFadeAnimation")
-  //     setTimeout(() => {
-  //       pokemonImage.removeChild(document.querySelector(".berryFadeAnimation"))
-  //     }, 3000);
-
-  //     pokemonImage.appendChild(berryFadeImage)
-  //     updateInventory (currentBait, "baits", "remove")
-  //   } else {
-  //     const domImage = document.querySelector(".wild-pokemon #pokemon-img")
-  //     if(nameTag.contains(domImage)){
-  //       nameTag.removeChild(domImage)
-  //     }
-  //   }
-  // }, [useBerry])
-
-  // //run logic
-  // const run = () => {
-  //   if(runChance > Math.floor(Math.random() * 100)){
-  //     clearEncounter()
-  //   } else {
-  //     setSystemMessage(messages.failedRun)
-  //   }
-  // }
-
-  // const clearEncounter = () =>{
-  //   setEncounter(false)
-  //   setEncounteredPokemon("");
-  //   setBagWindow(false)
-  //   setBerry(false)
-  //   setBerryImage("/berry/RazzBerry.png")
   // }
 
   // // styles
@@ -285,9 +174,9 @@ export default function EncounterScreen(props) {
   //   setStyle()
   // }, [currentBait, currentPokeball])
 
-  // const berryStyle = {
-  //   opacity: useBerry ? 1 : 0.2
-  // }
+  const berryStyle = {
+    opacity: useBait && hasItem(currentBait) ? 1 : 0.2
+  }
 
 
   return (
@@ -341,9 +230,8 @@ export default function EncounterScreen(props) {
           <div className="inferface-container col-6">
             <div className="button rounded"><img className="interface-pokeball-image" src={`/pokeballs/${currentPokeball?.name}/idle.png`} /><h2>Capture</h2></div>
 
-            <div className="button rounded"><img className="interface-pokeball-image" src={`/berry/${currentBait?.name == "berry" ? "RazzBerry.png" : "NanabBerry.png"}`} /><h2>Berry</h2></div>
+            <div className="button rounded"><img className="interface-pokeball-image" src={`/berry/${currentBait?.name == "berry" ? "RazzBerry.png" : "NanabBerry.png"}`} style={berryStyle} /><h2>Berry</h2></div>
             <div className="button rounded"><img className="interface-pokeball-image interface-image-large" src="/bag.png" /><h2>Bag</h2></div>
-            {/* <div className="button rounded" onClick={run}><img className="interface-pokeball-image" src="/run.png" /><h2>Run</h2></div> */}
             <div className="button rounded"><img className="interface-pokeball-image" src="/run.png" /><h2>Run</h2></div>
 
           </div>

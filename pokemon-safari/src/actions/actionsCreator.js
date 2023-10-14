@@ -87,6 +87,11 @@ export const ADD_POKEMON = (pokemon) => ({
   payload: pokemon
 })
 
+export const THROW_POKEBALL = (boolean) => ({
+  type: actions.POKEBALL_THROWN,
+  payload: boolean
+})
+
 
 
 
@@ -115,4 +120,9 @@ export const CURRENT_POKEBALL = (item) => ({
 export const CURRENT_BAIT = (item) => ({
   type: actions.SELECT_BAIT,
   payload: item
+})
+
+export const ACTIVE_BAIT = (boolean) => ({
+  type: actions.SET_BAIT,
+  payload: boolean
 })

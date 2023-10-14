@@ -12,3 +12,6 @@ export const selectCurrentPokeball = (state) => state.currentPokeball
 export const selectCurrentBait = (state) => state.currentBait
 export const selectCurrentInterfaceIndex =(state) => state.currentInterfaceIndex
 export const selectLoading = (state) => state.loading
+export const selectUseBait = (state) => state.useBait
+export const selectPokemonList = (state) => state.pokemonList
+export const selectThrown = (state) => state.thrown

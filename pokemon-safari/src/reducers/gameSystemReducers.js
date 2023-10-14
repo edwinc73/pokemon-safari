@@ -1,4 +1,5 @@
 import * as actions from "../actions/actionTypes"
+import messages from "../js/systemMessages"
 
 export const setLoadingReducer = (state = false, action) => {
   switch (action.type) {
@@ -29,7 +30,7 @@ export const setBagWindowReducer = (state = false, action) => {
 
 export const setSystemMessagesReducer = (state = "", action) => {
   switch (action.type) {
-    case actions.BROWSE_INTERFACE:
+    case actions.SET_SYSTEM_MESSAGE:
       return action.payload
     default:
       return state

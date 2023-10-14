@@ -11,7 +11,7 @@ const initialState = {
       rarity: 1
     },{
       name: "greatball",
-      quantity: 0,
+      quantity: 1,
       value: 20,
       rarity: 0.4
     },{

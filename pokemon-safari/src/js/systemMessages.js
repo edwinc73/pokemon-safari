@@ -1,12 +1,12 @@
-const messages = (name, shiny) =>{
+const messages = (pokemon) =>{
   return {
     default: "What would you like to do?",
-    encounter: `You encountered a ${name}!`,
-    berry: `You used a berry, ${name} is now easier to catch`,
+    encounter: `You encountered a ${pokemon.name}!`,
+    berry: `You used a berry, ${pokemon.name} is now easier to catch`,
     throw: "you throw a pokeball",
-    caught: `You caught a ${shiny ? "shiny" : ""} ${name}`,
+    caught: `You caught a ${pokemon.shiny ? "shiny" : ""} ${pokemon.name}`,
     failed: "Darn, so close!",
-    failedRun: `${name} blocked your escape!`
+    failedRun: `${pokemon.name} blocked your escape!`
   }
 }
 
