@@ -27,6 +27,11 @@ export const FETCH_ALL_POKEMON_DATA = () => {
   };
 }
 
+export const SET_MAP_ITEMS_LIST = (array) => ({
+  type: actions.MAP_ITEMS,
+  payload: array
+})
+
 // game events and system
 export const SET_LOADING = (isLoading) =>({
   type: actions.LOADED,

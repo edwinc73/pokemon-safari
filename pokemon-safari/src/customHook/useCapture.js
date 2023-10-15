@@ -22,7 +22,7 @@ const useCapture = () => {
       const playerThrowing = document.querySelector("#player-throwing")
       const ballContainer = document.querySelector(".ball-container")
       const pokemonBallAnimation = document.querySelector("#pokemonBallAnimation")
-
+      const pokemonImage = document.querySelector("#pokemonImage")
       const caught = isCaught(pokemon, currentPokeball, currentBait, useBait)
       const randTime = randomCatchingTime(caught)
       playerAnimation()
@@ -44,12 +44,14 @@ const useCapture = () => {
             if(pokemonRan(pokemon)){
               setTimeout(() => {
                 dispatch(SYSTEM_MESSAGE(messages(pokemon).pokemonRun))
+                flashAnimation(pokemonImage)
+                runAway(pokemonImage)
                 setTimeout(() => {
                   dispatch(SET_ENCOUNTER(false))
                   dispatch(THROW_POKEBALL(false))
                   dispatch(ACTIVE_BAIT(false))
                   dispatch(SYSTEM_MESSAGE(messages(pokemon).default))
-                }, 2000);
+                }, 4000);
               }, 2000);
             } else {
             setTimeout(() => {
@@ -89,7 +91,7 @@ const useCapture = () => {
             }, 500);
           }
         }, randTime);
-      }, 925);
+      }, 900);
 
       setTimeout(() => {
           playerThrowing.classList.remove("throw");
@@ -101,10 +103,17 @@ const useCapture = () => {
 
   // animations
 
-    const flashAnimation = (node) => {
+  const flashAnimation = (node) => {
     node.classList.add("flash")
     setTimeout(() => {
       node.classList.remove("flash")
+    }, 1500);
+  }
+
+  const runAway = (node) => {
+    node.classList.add("runAway")
+    setTimeout(() => {
+      node.classList.remove("runAway")
     }, 1500);
   }
 

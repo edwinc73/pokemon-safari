@@ -7,7 +7,7 @@ import config from '../../constants/config'
 
 import InventoryInterface from '../InventoryInterface/InventoryInterface'
 
-import { selectBagWindow, selectEncounter, selectInventory, selectPokemonEncounter, selectSystemMessage, selectCurrentItemIndex, selectCurrentPokeball, selectCurrentBait, selectCurrentInterfaceIndex, selectThrown, selectUseBait } from "../../selectors/selectors"
+import { selectBagWindow, selectEncounter, selectInventory, selectPokemonEncounter, selectSystemMessage, selectCurrentItemIndex, selectCurrentPokeball, selectCurrentBait, selectCurrentInterfaceIndex, selectThrown, selectUseBait, selectMapItemList } from "../../selectors/selectors"
 import updateInventory from '../../customHook/updateInventory'
 import navigateInterface from '../../customHook/navigateInterface'
 import useCapture from '../../customHook/useCapture'
@@ -31,12 +31,14 @@ export default function EncounterScreen(props) {
   const pokemon = useSelector(selectPokemonEncounter)
   const bagWindow = useSelector(selectBagWindow)
   const systemMessage = useSelector(selectSystemMessage)
-  const itemIndex = useSelector(selectCurrentItemIndex)
+  // const itemIndex = useSelector(selectCurrentItemIndex)
   const currentPokeball = useSelector(selectCurrentPokeball)
   const currentBait = useSelector(selectCurrentBait)
   const currentInterfaceIndex = useSelector(selectCurrentInterfaceIndex)
   const thrown = useSelector(selectThrown)
   const useBait = useSelector(selectUseBait)
+  const mapItemList = useSelector(selectMapItemList)
+
 
   //      style
   const encounterStyle = {

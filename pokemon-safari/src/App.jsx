@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { nanoid, random } from 'nanoid';
 import { useDispatch, useSelector } from 'react-redux'
-import { selectAllPokemon, selectCollisionCoord, selectEncounter, selectPosition, selectPokemonEncounter, selectInventory, selectLoading, selectPokemonList} from './selectors/selectors'
+import { selectAllPokemon, selectCollisionCoord, selectEncounter, selectPosition, selectInventory, selectLoading, selectPokemonList } from './selectors/selectors'
 import config  from "./constants/config.js";
 
 import './App.scss'
@@ -17,18 +17,20 @@ import Loading from "../src/components/Loading/Loading"
 
 //      redux
 import store from "./store/index"
-import {SET_LOADING, SET_COLLISION, SET_GRASS, SET_POSITION, SET_ENCOUNTER, ADD_POKEMON, NEW_POKEMON, ADD_ITEM, REMOVE_ITEM, FETCH_ALL_POKEMON_DATA, CURRENT_POKEBALL, CURRENT_BAIT, SET_BAGWINDOW, SYSTEM_MESSAGE, SET_SCORE} from "./actions/actionsCreator"
+import {SET_LOADING, SET_COLLISION, SET_GRASS, SET_POSITION, SET_ENCOUNTER, ADD_POKEMON, NEW_POKEMON, ADD_ITEM, REMOVE_ITEM, FETCH_ALL_POKEMON_DATA, CURRENT_POKEBALL, CURRENT_BAIT, SET_BAGWINDOW, SYSTEM_MESSAGE, SET_SCORE, SET_MAP_ITEMS_LIST} from "./actions/actionsCreator"
 
 //      data
 import { collision } from "../data/collision-map"
 import { grass } from "../data/grass-map.js"
 import { findItem } from './js/inventory';
 import SideMenu from './components/SideMenu/SideMenu';
+import scatterItems from './js/scatterItems';
 
 function App() {
   const dispatch  = useDispatch()
   const { backgroundSize } = config
   const { handleMovement } = useMovement()
+  const { initializeItems } = scatterItems(0)
 
   //      Get all states from store
   const inventory = useSelector(selectInventory)
@@ -37,9 +39,10 @@ function App() {
   const collisionCoord = useSelector(selectCollisionCoord)
   const encounter = useSelector(selectEncounter)
   const pokemonList = useSelector(selectPokemonList)
-  const pokemonEncounter = useSelector(selectPokemonEncounter)
-  const loading = useSelector(selectLoading)
+  // const pokemonEncounter = useSelector(selectPokemonEncounter)
+  // const loading = useSelector(selectLoading)
   // const pokemon = useSelector(selectPokemonEncounter)
+
 
   useEffect(()=>{
     //      initialize map
@@ -48,6 +51,7 @@ function App() {
     dispatch(SET_ENCOUNTER(false))
     dispatch(FETCH_ALL_POKEMON_DATA())
     dispatch(SET_SCORE(0))
+    dispatch(SET_MAP_ITEMS_LIST(initializeItems()))
   }, [])
 
   useEffect(() => {

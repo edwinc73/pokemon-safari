@@ -26,3 +26,12 @@ export const fetchAllPokemonDataReducer =(state = [], action) => {
       return state
   }
 }
+
+export const setMapItemsList = (state = [], action) => {
+  switch (action.type) {
+    case actions.MAP_ITEMS:
+      return action.payload
+    default:
+      return state
+  }
+}
