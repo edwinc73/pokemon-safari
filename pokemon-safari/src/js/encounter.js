@@ -47,7 +47,6 @@ export const isCaught = (pokemon, currentPokeball, currentBait, useBait) => {
   const baitValue = useBait ? currentBait.value : 0
   const levelAdjuster = ((pokemon.level / 100) * config.maxLevelModifier) + 1
   const attempt =  Math.floor(Math.random() * config.maxCatchChance)
-  console.log(pokeballValue , baitValue)
   return attempt + pokeballValue + baitValue > pokemon.baseExperience * levelAdjuster
 }
 
@@ -68,4 +67,11 @@ export const randomCatchingTime = (caught) => {
 
 export const run = () => {
   return config.runChance > Math.floor(Math.random() * 100)
+}
+
+export const pokemonRan = (pokemon) => {
+  const { level, baseExperience } = pokemon
+  const random = Math.random() * 355 * config.pokemonRunChance
+  console.log(( level + baseExperience ), random, ( level + baseExperience > random))
+  return ( level + baseExperience > random)
 }

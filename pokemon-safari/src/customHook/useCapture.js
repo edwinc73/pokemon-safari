@@ -1,7 +1,7 @@
 import config from "../constants/config"
 import { useSelector, useDispatch } from "react-redux";
 import { selectCurrentBait, selectCurrentPokeball, selectInventory, selectPokemonEncounter, selectThrown, selectUseBait } from "../selectors/selectors";
-import { isCaught, randomCatchingTime } from "../js/encounter";
+import { isCaught, pokemonRan, randomCatchingTime } from "../js/encounter";
 import { findItem, hasItem } from '../js/inventory'
 import { ADD_POKEMON, SET_ENCOUNTER, SYSTEM_MESSAGE, THROW_POKEBALL, REMOVE_ITEM, ACTIVE_BAIT, CURRENT_POKEBALL } from "../actions/actionsCreator";
 import messages from "../js/systemMessages";
@@ -39,12 +39,29 @@ const useCapture = () => {
           }, 4000);
         }, randTime)
       } else {
-        dispatch(SYSTEM_MESSAGE(messages(pokemon).failed))
         setTimeout(() => {
-          dispatch(THROW_POKEBALL(false))
-          dispatch(ACTIVE_BAIT(false))
-          dispatch(SYSTEM_MESSAGE(messages(pokemon).default))
-        }, randTime)
+          dispatch(SYSTEM_MESSAGE(messages(pokemon).failed))
+            if(pokemonRan(pokemon)){
+              setTimeout(() => {
+                dispatch(SYSTEM_MESSAGE(messages(pokemon).pokemonRun))
+                setTimeout(() => {
+                  dispatch(SET_ENCOUNTER(false))
+                  dispatch(THROW_POKEBALL(false))
+                  dispatch(ACTIVE_BAIT(false))
+                  dispatch(SYSTEM_MESSAGE(messages(pokemon).default))
+                }, 2000);
+              }, 2000);
+            } else {
+            setTimeout(() => {
+              dispatch(SYSTEM_MESSAGE(messages(pokemon).looking))
+              setTimeout(() => {
+                dispatch(THROW_POKEBALL(false))
+                dispatch(ACTIVE_BAIT(false))
+                dispatch(SYSTEM_MESSAGE(messages(pokemon).default))
+              }, 2000);
+            }, 2000);
+          }
+        }, randTime + 500);
       }
 
       setTimeout(() => {

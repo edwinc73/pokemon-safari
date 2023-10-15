@@ -26,7 +26,9 @@ const config = {
     name: "berry",
     quantity : 5,
     value: 5
-  }
+  },
+  shinyBonus: 2,
+  pokemonRunChance: 1.2
 }
 
 export default config

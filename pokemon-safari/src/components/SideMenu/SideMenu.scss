@@ -1,0 +1,97 @@
+@import "../../App.scss";
+
+.sidemenu{
+  position: absolute;
+  left: 50%;
+  right: 50%;
+  top: $game-container-margin;
+  transform: translateX( calc( $game-container-size / 2 ));
+  margin-left: 30px;
+  width: 300px;
+  height: $game-container-size;
+  border-radius: $game-container-radius;
+  padding: 25px;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 60px;
+  gap: 25px;
+
+  .sidemenu-container{
+    border: $game-container-border;
+    border-radius: 10px;
+  }
+  .timer-container{
+    width: 250px;
+    padding: 10px 20px;
+    height: 80px;
+  }
+
+  .pokemon-list-container{
+    min-width: 250px;
+    min-height: 50px;
+    font-size: 25px;
+    overflow: scroll;
+    overflow-x: hidden;
+    height: 100%;
+  }
+
+  .pokemon-list{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+
+  .shiny-icon{
+    width: 15px;
+    height: 15px;
+    margin-left: 10px;
+  }
+
+  .score-container{
+    border: $game-container-border;
+    border-radius: 10px;
+    font-size: 25px;
+    min-height: 50px;
+  }
+}
+
+.pokemon{
+  transition: 2s ease-in-out;
+  p{
+    font-size: 16px;
+    margin: 0;
+    padding: 0;
+  }
+
+  p:last-child{
+    margin-top: -8px;
+  }
+
+  .sprite{
+    width: 100%;
+    height: 100%;
+  }
+
+  .pokemon-description{
+    height: 15px;
+  }
+}
+
+//      edit scroll bar
+::-webkit-scrollbar {
+  width: 16px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgba($color: #000000, $alpha: 0.0);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: $font-color;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: black;
+}

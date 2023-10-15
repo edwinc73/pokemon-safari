@@ -1,3 +1,5 @@
+@import "../../App.scss";
+
 #encounter-screen{
   background-color: white;
   width: 1200px;
@@ -125,8 +127,7 @@
 
   .name-tag{
     background-color: white;
-    border:5px double black;
-    border-style: double;
+    border:$game-container-border;
     height: fit-content;
     margin: 30px;
   }
@@ -157,7 +158,7 @@
     width: 400px;
     background: rgba(255,255,255,0.8);
     padding: 30px;
-    border: 5px double black;
+    border: $game-container-border;
     border-radius: 10px;
   }
 
@@ -168,7 +169,7 @@
 
   .bag-split{
     height: 3px;
-    border-top: 5px double black;
+    border-top: 5px double $font-color;
 
   }
 

@@ -11,7 +11,7 @@ import { selectBagWindow, selectEncounter, selectInventory, selectPokemonEncount
 import updateInventory from '../../customHook/updateInventory'
 import navigateInterface from '../../customHook/navigateInterface'
 import useCapture from '../../customHook/useCapture'
-import { ACTIVE_BAIT, CURRENT_BAIT, CURRENT_POKEBALL, INTERFACE_INDEX, SELECT_ITEM_INDEX, SET_LOADING, SYSTEM_MESSAGE } from "../../actions/actionsCreator"
+import { ACTIVE_BAIT, CURRENT_BAIT, CURRENT_POKEBALL, INTERFACE_INDEX, SELECT_ITEM_INDEX, SET_LOADING, SYSTEM_MESSAGE, THROW_POKEBALL } from "../../actions/actionsCreator"
 
 import {PlayerThrowing} from "../Player/Player"
 import { findItem, hasItem } from '../../js/inventory'
@@ -57,6 +57,7 @@ export default function EncounterScreen(props) {
       dispatch(INTERFACE_INDEX(0))
       dispatch(INTERFACE_INDEX(0))
       dispatch(ACTIVE_BAIT(false))
+      dispatch(THROW_POKEBALL(false))
     }
 
     const loadImage = async () => {
@@ -138,46 +139,9 @@ export default function EncounterScreen(props) {
     };
   }, [encounter, pokemon, bagWindow, currentInterfaceIndex]);
 
-
-
-  // useEffect(() => {
-  //   setSystemMessage(messages.encounter)
-  // }, [encounteredPokemon])
-
-  // //capture logic
-  // const [throwing, setThrowing] = useState(false)
-  // const [caught, setCaught] = useState(false)
-
-  // // catching
-
-  // const setThrow = async () => {
-  //   // check if inventory has pokeball
-  //   if(!throwing && !caught && hasItem(currentPokeball)){
-  //     await setThrowing(true)
-  //     await updateInventory(currentPokeball, "pokeballs", "remove")
-  //   }
-  // }
-
-  // // styles
-
-  // const [berryImage, setBerryImage] = useState(`/berry/RazzBerry.png`)
-
-  // useEffect(()=>{
-  //   const setStyle = async () => {
-  //     if(currentBait == "berry"){
-  //       await setBerryImage("/berry/RazzBerry.png")
-  //     } else if (currentBait == "banana"){
-  //       await setBerryImage("/berry/NanabBerry.png")
-  //     }
-  //   }
-
-  //   setStyle()
-  // }, [currentBait, currentPokeball])
-
   const berryStyle = {
     opacity: useBait && hasItem(currentBait) ? 1 : 0.2
   }
-
 
   return (
     <>
@@ -240,9 +204,3 @@ export default function EncounterScreen(props) {
     </>
   )
 }
-
-// set running logic and animation
-
-//add random items on the map
-
-// add lazy loading and a loading screen to make sure the images are loaded in before the user sees it

@@ -15,3 +15,5 @@ export const selectLoading = (state) => state.loading
 export const selectUseBait = (state) => state.useBait
 export const selectPokemonList = (state) => state.pokemonList
 export const selectThrown = (state) => state.thrown
+export const selectStart = (state) => state.start
+export const selectScore = (state) => state.score

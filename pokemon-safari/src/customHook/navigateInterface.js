@@ -2,7 +2,7 @@ import config from '../constants/config'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { INTERFACE_INDEX, SET_BAGWINDOW, SET_ENCOUNTER, THROW_POKEBALL, ACTIVE_BAIT, REMOVE_ITEM, SYSTEM_MESSAGE, CURRENT_BAIT} from "../actions/actionsCreator"
-import { selectBagWindow, selectCurrentInterfaceIndex, selectPokemonEncounter, selectCurrentBait, selectUseBait, selectInventory } from '../selectors/selectors';
+import { selectBagWindow, selectCurrentInterfaceIndex, selectPokemonEncounter, selectCurrentBait, selectUseBait, selectInventory, selectThrown } from '../selectors/selectors';
 import { findItem, hasItem } from "../js/inventory"
 import { run } from "../js/encounter"
 import messages from '../js/systemMessages'
@@ -18,7 +18,7 @@ export default function navigateInterface () {
   const useBait = useSelector(selectUseBait)
   const currentBait = useSelector(selectCurrentBait)
   const inventory = useSelector(selectInventory)
-
+  const thrown = useSelector(selectThrown)
 
   const handleInterfaceKeyDown = (e) => {currentBait.name == "berry" ? "/berry/RazzBerry.png" : "/berry/NanabBerry.png"
     e.stopPropagation();
@@ -43,7 +43,7 @@ export default function navigateInterface () {
           case "z":
             switch (currentInterfaceIndex) {
               case 0:
-                dispatch(THROW_POKEBALL(true))
+                !thrown && dispatch(THROW_POKEBALL(true))
               break;
               case 1:
                 if(hasItem(currentBait) && !useBait){

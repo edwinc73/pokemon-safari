@@ -48,3 +48,21 @@ export const setCurrentInterfaceIndex = (state = 0, action) => {
       return state
   }
 }
+
+export const setGameStartReducer = (state = false, action) => {
+  switch (action.type) {
+    case actions.START_GAME:
+      return action.payload;
+    default:
+      return state
+  }
+}
+
+export const setGameScoreReducer = (state= 0, action) => {
+  switch (action.type) {
+    case actions.SET_GAME_SCORE:
+      return action.payload
+    default:
+      return state
+  }
+}

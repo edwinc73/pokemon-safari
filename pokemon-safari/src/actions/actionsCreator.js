@@ -27,7 +27,7 @@ export const FETCH_ALL_POKEMON_DATA = () => {
   };
 }
 
-// game event screen triggers
+// game events and system
 export const SET_LOADING = (isLoading) =>({
   type: actions.LOADED,
   payload: isLoading
@@ -58,6 +58,11 @@ export const INTERFACE_INDEX = (i) => ({
   payload: i
 })
 
+export const GAME_START = (boolean) => ({
+  type: actions.START_GAME,
+  payload: boolean
+})
+
 
 // player movement
 export const SET_POSITION = (direction, x, y) => ({
@@ -71,6 +76,10 @@ export const SET_POSITION = (direction, x, y) => ({
   }
 })
 
+export const SET_SCORE = (score) => ({
+  type: actions.SET_GAME_SCORE,
+  payload: score
+})
 
 
 
@@ -91,10 +100,6 @@ export const THROW_POKEBALL = (boolean) => ({
   type: actions.POKEBALL_THROWN,
   payload: boolean
 })
-
-
-
-
 
 // inventory
 export const ADD_ITEM = (item) => ({
