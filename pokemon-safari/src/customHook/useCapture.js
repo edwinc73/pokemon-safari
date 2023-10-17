@@ -29,9 +29,9 @@ const useCapture = () => {
       if(caught){
         dispatch(SYSTEM_MESSAGE(messages(pokemon).throw))
         setTimeout(()=>{
-          dispatch(ADD_POKEMON(pokemon))
           dispatch(SYSTEM_MESSAGE(messages(pokemon).caught))
           setTimeout(() => {
+            dispatch(ADD_POKEMON(pokemon))
             pokemonBallAnimation?.classList.remove("catching-success")
             dispatch(SET_ENCOUNTER(false))
             dispatch(THROW_POKEBALL(false))
@@ -43,14 +43,16 @@ const useCapture = () => {
           dispatch(SYSTEM_MESSAGE(messages(pokemon).failed))
             if(pokemonRan(pokemon)){
               setTimeout(() => {
-                dispatch(SYSTEM_MESSAGE(messages(pokemon).pokemonRun))
                 flashAnimation(pokemonImage)
-                runAway(pokemonImage)
+                dispatch(SYSTEM_MESSAGE(messages(pokemon).pokemonRun))
                 setTimeout(() => {
+                  runAway(pokemonImage)
                   dispatch(SET_ENCOUNTER(false))
                   dispatch(THROW_POKEBALL(false))
                   dispatch(ACTIVE_BAIT(false))
-                  dispatch(SYSTEM_MESSAGE(messages(pokemon).default))
+                  setTimeout(() => {
+                    dispatch(SYSTEM_MESSAGE(messages(pokemon).default))
+                  }, 2000);
                 }, 4000);
               }, 2000);
             } else {
