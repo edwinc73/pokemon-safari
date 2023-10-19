@@ -66,3 +66,21 @@ export const setGameScoreReducer = (state= 0, action) => {
       return state
   }
 }
+
+export const setLatestMapItemReducer = (state = {}, action) => {
+  switch (action.type) {
+    case actions.FOUND_MAP_ITEM:
+      return action.payload
+    default:
+      return state
+  }
+}
+
+export const setShowPopUpReducer = (state= false, action) => {
+  switch (action.type) {
+    case actions.SETTING_SHOW_POPUP:
+      return action.payload
+    default:
+      return state
+  }
+}

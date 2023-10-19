@@ -19,3 +19,5 @@ export const selectStart = (state) => state.start
 export const selectScore = (state) => state.score
 export const selectMapItemList = (state) => state.mapItemList
 export const selectItemCoord = (state) => state.itemCoord
+export const selectLatestMapItem = (state) => state.latestMapItem
+export const selectShowPopUp = (state) => state.showPopup

@@ -4,7 +4,7 @@ const config = {
     height: 608 * 4
   },
   debounceTime : 250,
-  encounterChance: 0, // out of 100
+  encounterChance: 10, // out of 100
   // encounterChance: 90, // test
 
   squareValue: 56,

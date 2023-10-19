@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { nanoid, random } from 'nanoid';
 import { useDispatch, useSelector } from 'react-redux'
-import { selectAllPokemon, selectCollisionCoord, selectEncounter, selectPosition, selectInventory, selectLoading, selectPokemonList, selectMapItemList } from './selectors/selectors'
+import { selectAllPokemon, selectCollisionCoord, selectEncounter, selectPosition, selectInventory, selectLoading, selectPokemonList, selectMapItemList, selectLatestMapItem, selectShowPopUp } from './selectors/selectors'
 import config  from "./constants/config.js";
 
 import './App.scss'
 
 import {Player} from "../src/components/Player/Player"
+import Popup from './components/Popup/Popup';
 import useMovement from "./customHook/useMovement"
 import EncounterScreen from "./components/Encounter/EncounterScreen"
 import { getEncounteredPokemon, randomPokemon, pokemonName, isShiny, setPokemonLevel } from './js/encounter';
@@ -15,7 +16,7 @@ import Loading from "../src/components/Loading/Loading"
 
 //      redux
 import store from "./store/index"
-import {SET_LOADING, SET_COLLISION, SET_GRASS, SET_POSITION, SET_ENCOUNTER, ADD_POKEMON, NEW_POKEMON, ADD_ITEM, REMOVE_ITEM, FETCH_ALL_POKEMON_DATA, CURRENT_POKEBALL, CURRENT_BAIT, SET_BAGWINDOW, SYSTEM_MESSAGE, SET_SCORE, SET_MAP_ITEMS_LIST, FOUND_MAP_ITEM} from "./actions/actionsCreator"
+import {SET_LOADING, SET_COLLISION, SET_GRASS, SET_POSITION, SET_ENCOUNTER, ADD_POKEMON, NEW_POKEMON, ADD_ITEM, REMOVE_ITEM, FETCH_ALL_POKEMON_DATA, CURRENT_POKEBALL, CURRENT_BAIT, SET_BAGWINDOW, SYSTEM_MESSAGE, SET_SCORE, SET_MAP_ITEMS_LIST, FOUND_MAP_ITEM, SET_LATEST_MAP_ITEM, SET_SHOW_POPUP} from "./actions/actionsCreator"
 
 //      data
 import { collision } from "../data/collision-map"
@@ -38,6 +39,8 @@ function App() {
   const encounter = useSelector(selectEncounter)
   const pokemonList = useSelector(selectPokemonList)
   const mapItemList = useSelector(selectMapItemList)
+  const latestMapItem = useSelector(selectLatestMapItem)
+  const showPopup = useSelector(selectShowPopUp)
   // const pokemonEncounter = useSelector(selectPokemonEncounter)
   // const loading = useSelector(selectLoading)
   // const pokemon = useSelector(selectPokemonEncounter)
@@ -50,6 +53,7 @@ function App() {
     dispatch(SET_ENCOUNTER(false))
     dispatch(FETCH_ALL_POKEMON_DATA())
     dispatch(SET_SCORE(0))
+    dispatch(SET_SHOW_POPUP(false))
   }, [])
 
   useEffect(() => {
@@ -65,11 +69,6 @@ function App() {
     });
     dispatch(SET_SCORE(totalScore))
   }, [pokemonList, inventory])
-
-// test
-  // setTimeout(() => {
-  //   dispatch(SET_ENCOUNTER(true))
-  // }, 1000);
 
   useEffect(()=>{
     dispatch(CURRENT_POKEBALL(findItem(inventory, "pokeball")))
@@ -116,7 +115,11 @@ function App() {
 
     if(item) {
       dispatch(ADD_ITEM(item.item))
+      dispatch(SET_LATEST_MAP_ITEM(item.item))
       dispatch(FOUND_MAP_ITEM(item))
+      dispatch(SET_SHOW_POPUP(true))
+      const popUp = document.querySelector(".popup")
+      popUp.classList.add("show")
     }
   },[position])
 
@@ -145,6 +148,9 @@ function App() {
           {safariMap}
           <EncounterScreen />
           <Loading />
+          <Popup
+          item ={latestMapItem}
+          />
           <SideMenu />
         </div>
         {/* <Key

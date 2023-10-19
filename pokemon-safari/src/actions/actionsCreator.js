@@ -78,6 +78,16 @@ export const GAME_START = (boolean) => ({
   payload: boolean
 })
 
+export const SET_LATEST_MAP_ITEM = (item) => ({
+  type: actions.FOUND_MAP_ITEM,
+  payload: item
+})
+
+export const SET_SHOW_POPUP = (boolean) => ({
+  type: actions.SETTING_SHOW_POPUP,
+  payload: boolean
+})
+
 
 // player movement
 export const SET_POSITION = (direction, x, y) => ({

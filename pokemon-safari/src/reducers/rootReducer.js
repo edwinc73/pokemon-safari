@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 import { AddPokemonReducer, encounterPokemonReducer } from "./encounteredPokemonReducers"
 import {} from "./pokemonListReducers"
 import { fetchAllPokemonDataReducer, setCollisionCoord, setGrassCoord, setItemCoord, setMapItemsList } from "./initializeReducers"
-import { setBagWindowReducer, setCurrentInterfaceIndex, setEncounteredReducer, setGameScoreReducer, setGameStartReducer, setLoadingReducer, setSystemMessagesReducer } from "./gameSystemReducers"
+import { setBagWindowReducer, setCurrentInterfaceIndex, setEncounteredReducer, setGameScoreReducer, setGameStartReducer, setLatestMapItemReducer, setLoadingReducer, setShowPopUpReducer, setSystemMessagesReducer } from "./gameSystemReducers"
 import { setCurrentPokeball, setItemIndex, updateItemReducer, setBait, setActiveBait, setThrowPokeball } from "./inventoryReducers"
 import { setPositionReducer } from "./playerReducers"
 
@@ -27,7 +27,9 @@ const rootReducer = combineReducers({
   start: setGameStartReducer,
   score: setGameScoreReducer,
   mapItemList: setMapItemsList,
-  itemCoord:setItemCoord
+  itemCoord:setItemCoord,
+  latestMapItem: setLatestMapItemReducer,
+  showPopup: setShowPopUpReducer
 });
 
 export default rootReducer;
