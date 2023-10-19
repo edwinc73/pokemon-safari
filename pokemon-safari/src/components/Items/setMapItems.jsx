@@ -3,8 +3,7 @@ import { selectInventory, selectMapItemList } from "../../selectors/selectors";
 import itemMap from "../../../data/item-map"
 import { nanoid } from "nanoid";
 import config from "../../constants/config";
-import { createImmutableStateInvariantMiddleware } from "@reduxjs/toolkit";
-import { SET_MAP_ITEMS_LIST } from "../../actions/actionsCreator";
+import { SET_ITEM_COORD, SET_MAP_ITEMS_LIST } from "../../actions/actionsCreator";
 import { useEffect } from "react";
 
 class Item{
@@ -47,7 +46,7 @@ const Items = () => {
     for (let i = 0; i < itemMap.length; i++) {
       for (let j = 0; j < itemMap[i].length; j++) {
         if (itemMap[i][j] === 391) {
-          validIndexes.push({ row: i, col: j });
+          validIndexes.push({ yIndex: i, xIndex: j });
         }
       }
     }
@@ -64,7 +63,7 @@ const Items = () => {
       const mapItems = []
       for (let i = 0; i < 20; i++) {
         mapItems.push(
-          new Item(nanoid(), itemCoords[i].row, itemCoords[i].col, generateItem())
+          new Item(nanoid(), itemCoords[i].xIndex, itemCoords[i].yIndex, generateItem())
         )
       }
       return mapItems
@@ -72,35 +71,39 @@ const Items = () => {
 
     const items = initializeItems()
 
+    const foundCoord = (x , y) => {
+      return items.some( item => item.y ==y && item.x == x)
+    }
+
+    const findItem = (x, y) => {
+      return items.find(item => item.y == y && item.x == x)
+    }
+    const itemCoord = []
+
+    for (let i = 0; i < 38; i++) {
+      let row  = []
+      for (let a = 0; a < 70; a++) {
+          const value = foundCoord(i, a) ? findItem(i,a) : 0
+          row.push(value)
+      }
+      itemCoord.push(row)
+    }
+
+    dispatch(SET_ITEM_COORD(itemCoord))
     dispatch(SET_MAP_ITEMS_LIST(items))
   }, [])
 
   const displayItems = mapItemsList.map(item => {
-    console.log(item)
     const imageStyle =  {
       position: "absolute",
       width: "40px",
       height: "40px",
-      top: `${((item.y - 2) * config.squareValue)}px`,
-      left: `${((item.x - 2)* config.squareValue)}px`
+      top: `${(item.y * config.squareValue)}px`,
+      left: `${(item.x * config.squareValue)}px`
     }
-
-    const titlePos = {
-      position: "absolute",
-      width: "40px",
-      height: "40px",
-      top: `${((0) * config.squareValue)}px`,
-      left: `${((item.x - 2)* config.squareValue)}px`,
-      zIndex:  30
-    }
-    console.log(`${(item.y * config.squareValue)}`)
-    console.log(`${(item.x * config.squareValue)}`)
 
     return(
-      <>
-        <h2 style={titlePos}>{item.y}, {item.x}</h2>
-        <img key={item.id} style={imageStyle} alt={`item-${item.id}`} src="./pokeballs/pokeball/idle.png" />
-      </>
+      <img key={item.id} style={imageStyle} alt={`item-${item.id}`} src="./pokeballs/pokeball/idle.png" />
     )
   })
 

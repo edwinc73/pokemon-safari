@@ -31,6 +31,20 @@ export const setMapItemsList = (state = [], action) => {
   switch (action.type) {
     case actions.MAP_ITEMS:
       return action.payload
+    case actions.REMOVE_MAP_ITEM:
+      const item = state.find(i => i.id == action.payload.id )
+      const index = state.indexOf(item)
+      item && state.splice(index, 1)
+      return state
+    default:
+      return state
+  }
+}
+
+export const setItemCoord = (state = [], action) => {
+  switch (action.type) {
+    case actions.ITEM_COORD:
+      return action.payload
     default:
       return state
   }

@@ -32,6 +32,16 @@ export const SET_MAP_ITEMS_LIST = (array) => ({
   payload: array
 })
 
+export const SET_ITEM_COORD = (array) => ({
+  type: actions.ITEM_COORD,
+  payload: array
+})
+
+export const FOUND_MAP_ITEM = (item) => ({
+  type: actions.REMOVE_MAP_ITEM,
+  payload: item
+})
+
 // game events and system
 export const SET_LOADING = (isLoading) =>({
   type: actions.LOADED,

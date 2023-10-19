@@ -54,6 +54,4 @@ const store = configureStore({
   middleware: [thunk]
 });
 
-console.log(store.getState())
-
 export default store;

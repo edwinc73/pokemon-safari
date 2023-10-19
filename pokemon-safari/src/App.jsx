@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { nanoid, random } from 'nanoid';
 import { useDispatch, useSelector } from 'react-redux'
-import { selectAllPokemon, selectCollisionCoord, selectEncounter, selectPosition, selectInventory, selectLoading, selectPokemonList } from './selectors/selectors'
+import { selectAllPokemon, selectCollisionCoord, selectEncounter, selectPosition, selectInventory, selectLoading, selectPokemonList, selectMapItemList } from './selectors/selectors'
 import config  from "./constants/config.js";
 
 import './App.scss'
@@ -15,7 +15,7 @@ import Loading from "../src/components/Loading/Loading"
 
 //      redux
 import store from "./store/index"
-import {SET_LOADING, SET_COLLISION, SET_GRASS, SET_POSITION, SET_ENCOUNTER, ADD_POKEMON, NEW_POKEMON, ADD_ITEM, REMOVE_ITEM, FETCH_ALL_POKEMON_DATA, CURRENT_POKEBALL, CURRENT_BAIT, SET_BAGWINDOW, SYSTEM_MESSAGE, SET_SCORE, SET_MAP_ITEMS_LIST} from "./actions/actionsCreator"
+import {SET_LOADING, SET_COLLISION, SET_GRASS, SET_POSITION, SET_ENCOUNTER, ADD_POKEMON, NEW_POKEMON, ADD_ITEM, REMOVE_ITEM, FETCH_ALL_POKEMON_DATA, CURRENT_POKEBALL, CURRENT_BAIT, SET_BAGWINDOW, SYSTEM_MESSAGE, SET_SCORE, SET_MAP_ITEMS_LIST, FOUND_MAP_ITEM} from "./actions/actionsCreator"
 
 //      data
 import { collision } from "../data/collision-map"
@@ -37,6 +37,7 @@ function App() {
   const collisionCoord = useSelector(selectCollisionCoord)
   const encounter = useSelector(selectEncounter)
   const pokemonList = useSelector(selectPokemonList)
+  const mapItemList = useSelector(selectMapItemList)
   // const pokemonEncounter = useSelector(selectPokemonEncounter)
   // const loading = useSelector(selectLoading)
   // const pokemon = useSelector(selectPokemonEncounter)
@@ -102,6 +103,22 @@ function App() {
     };
     getData()
   }, [encounter]);
+
+  useEffect(()=>{
+
+    const currentCoord = {
+      x: Math.ceil((backgroundSize.width - position.movementValue.x - 3970) / config.squareValue) + 1,
+      y: Math.ceil((backgroundSize.height - position.movementValue.y - 1902) / config.squareValue) + 1
+    }
+    const item = mapItemList.find(item => {
+      return item.x == currentCoord.x && item.y == currentCoord.y
+    })
+
+    if(item) {
+      dispatch(ADD_ITEM(item.item))
+      dispatch(FOUND_MAP_ITEM(item))
+    }
+  },[position])
 
   const backgroundStyle ={
     top: `${position.movementValue.y}px`,
