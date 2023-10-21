@@ -12,7 +12,6 @@ export default function navigateInventory () {
   const bagWindow = useSelector(selectBagWindow)
   const currentItemIndex = useSelector(selectCurrentItemIndex)
 
-
   const handleInventoryNavigation = (e) => {
     e.stopPropagation();
 

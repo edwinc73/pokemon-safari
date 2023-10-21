@@ -2,10 +2,11 @@ import config from '../constants/config'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { INTERFACE_INDEX, SET_BAGWINDOW, SET_ENCOUNTER, THROW_POKEBALL, ACTIVE_BAIT, REMOVE_ITEM, SYSTEM_MESSAGE, CURRENT_BAIT} from "../actions/actionsCreator"
-import { selectBagWindow, selectCurrentInterfaceIndex, selectPokemonEncounter, selectCurrentBait, selectUseBait, selectInventory, selectThrown } from '../selectors/selectors';
+import { selectBagWindow, selectCurrentInterfaceIndex, selectPokemonEncounter, selectCurrentBait, selectUseBait, selectInventory, selectThrown, selectEncounter, selectShowPopUp } from '../selectors/selectors';
 import { findItem, hasItem } from "../js/inventory"
 import { run } from "../js/encounter"
 import messages from '../js/systemMessages'
+import { useEffect, useRef } from 'react';
 
 
 let lastMoveTime = 0;
@@ -19,9 +20,22 @@ export default function navigateInterface () {
   const currentBait = useSelector(selectCurrentBait)
   const inventory = useSelector(selectInventory)
   const thrown = useSelector(selectThrown)
+  const showPopup = useSelector(selectShowPopUp)
+  const encounter = useSelector(selectEncounter)
+  const encounterRef = useRef(encounter)
+  const showPopupRef = useRef(showPopup)
+  const bagWindowRef = useRef(bagWindow)
+
+  useEffect(()=> {
+    encounterRef.current = encounter;
+    showPopupRef.current = showPopup
+    bagWindowRef.current = bagWindow
+  }, [encounter, showPopup, bagWindow])
+
 
   const handleInterfaceKeyDown = (e) => {currentBait.name == "berry" ? "/berry/RazzBerry.png" : "/berry/NanabBerry.png"
     e.stopPropagation();
+    if(!encounterRef.current || showPopupRef.current || bagWindowRef.current)return;
     const currentTime = new Date().getTime();
     if (currentTime - lastMoveTime < config.debounceTime) {
       return;

@@ -8,7 +8,7 @@ import navigateInventory from "../../customHook/navigateInventory.js"
 
 import { hasItem } from "../../js/inventory.js"
 import { setCurrentInterfaceIndex } from '../../reducers/gameSystemReducers.js'
-import { selectInventory, selectCurrentItemIndex, selectBagWindow, selectEncounter } from '../../selectors/selectors.js'
+import { selectInventory, selectCurrentItemIndex, selectBagWindow, selectEncounter, selectShowPopUp } from '../../selectors/selectors.js'
 
 let lastMoveTime = 0;
 
@@ -20,7 +20,6 @@ export default function InventoryInterface() {
   const inventory = useSelector(selectInventory)
   const bagWindow = useSelector(selectBagWindow)
   const currentItemIndex = useSelector(selectCurrentItemIndex)
-
 
   const inventoryCategories = Object.keys(inventory)
   const pokeballsCategories = inventory[inventoryCategories[0]]

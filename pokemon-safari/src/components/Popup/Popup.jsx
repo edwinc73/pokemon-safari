@@ -30,6 +30,7 @@ export default function Popup(props){
   return(
     <div className='popup-container d-flex justify-content-center align-items-center'>
       <div className="popup d-flex justify-content-around align-items-center text-bg-light">
+        <span><img src={item.src} className="item-image" alt="item-image" /></span>
         <h2>
           You got a {item.name && item.name[0].toUpperCase() + item.name.slice(1)}.
         </h2>

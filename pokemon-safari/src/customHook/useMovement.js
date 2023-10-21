@@ -1,4 +1,4 @@
-import { selectEncounter, selectCollisionCoord, selectPosition, selectGrassCoord, selectItemCoord, selectMapItemList, selectShowPopUp } from "../selectors/selectors"
+import { selectEncounter, selectCollisionCoord, selectPosition, selectGrassCoord, selectItemCoord, selectMapItemList, selectShowPopUp, selectBagWindow } from "../selectors/selectors"
 import { useSelector, useDispatch } from "react-redux";
 import { encountered } from "../js/encounter";
 import { SET_POSITION, SET_ENCOUNTER } from "../actions/actionsCreator"
@@ -17,17 +17,20 @@ const useMovement = () => {
   const grassCoord = useSelector(selectGrassCoord)
   const position = useSelector(selectPosition)
   const showPopup = useSelector(selectShowPopUp)
+  const bagWindow = useSelector(selectBagWindow)
   const encounterRef = useRef(encounter)
   const showPopupRef = useRef(showPopup)
+  const bagWindowRef = useRef(bagWindow)
 
   useEffect(()=> {
     encounterRef.current = encounter;
     showPopupRef.current = showPopup
-  }, [encounter, showPopup])
+    bagWindowRef.current = bagWindow
+  }, [encounter, showPopup, bagWindow])
 
   const handleMovement = (e) => {
     e.stopPropagation();
-    if(encounterRef.current || showPopupRef.current){
+    if(encounterRef.current || showPopupRef.current || bagWindowRef.current){
       return ;
     } else {
       //      debounce keypresses

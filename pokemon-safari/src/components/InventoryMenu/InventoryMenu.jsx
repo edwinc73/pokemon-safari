@@ -10,7 +10,7 @@ export default function InventoryMenu(props){
 
   const pokeballs = inventory.pokeballs.map(item => {
     return(
-      <div className="pokeball d-flex justify-content-between align-items-center">
+      <div key={item.name+"-container"} className="pokeball d-flex justify-content-between align-items-center">
         <div className='item-name d-flex align-items-center'>
           <span> <img className="pokeball-image" src={item.src} alt="" /></span>
           <span> <p>{item.name}</p> </span>
@@ -24,7 +24,7 @@ export default function InventoryMenu(props){
 
   const baits = inventory.baits.map(item => {
     return(
-      <div className="pokeball d-flex justify-content-between align-items-center">
+      <div key={item.name+"-container"} className="pokeball d-flex justify-content-between align-items-center">
         <div className='item-name d-flex align-items-center'>
           <span> <img className="pokeball-image" src={item.src} alt="" /></span>
           <span> <p>{item.name}</p> </span>
@@ -38,7 +38,7 @@ export default function InventoryMenu(props){
 
   const etc = inventory.etc.map(item => {
     return(
-      <div className="pokeball d-flex justify-content-between align-items-center">
+      <div key={item.name+"-container"} className="pokeball d-flex justify-content-between align-items-center">
         <div className='item-name d-flex align-items-center'>
           <span> <img className="pokeball-image" src={item.src} alt="" /></span>
           <span> <p>{item.name}</p> </span>

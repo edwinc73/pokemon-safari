@@ -1,11 +1,11 @@
 import config from "../constants/config"
 import { useSelector, useDispatch } from "react-redux";
-import { selectCurrentBait, selectCurrentPokeball, selectInventory, selectPokemonEncounter, selectThrown, selectUseBait } from "../selectors/selectors";
+import { selectBagWindow, selectCurrentBait, selectCurrentPokeball, selectEncounter, selectInventory, selectPokemonEncounter, selectShowPopUp, selectThrown, selectUseBait } from "../selectors/selectors";
 import { isCaught, pokemonRan, randomCatchingTime } from "../js/encounter";
 import { findItem, hasItem } from '../js/inventory'
 import { ADD_POKEMON, SET_ENCOUNTER, SYSTEM_MESSAGE, THROW_POKEBALL, REMOVE_ITEM, ACTIVE_BAIT, CURRENT_POKEBALL } from "../actions/actionsCreator";
 import messages from "../js/systemMessages";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const useCapture = () => {
   const dispatch = useDispatch()
@@ -13,9 +13,21 @@ const useCapture = () => {
   const currentPokeball = useSelector(selectCurrentPokeball)
   const pokemon = useSelector(selectPokemonEncounter)
   const useBait = useSelector(selectUseBait)
-  const inventory = useSelector(selectInventory)
+  const showPopup = useSelector(selectShowPopUp)
+  const bagWindow = useSelector(selectBagWindow)
+  const encounter = useSelector(selectEncounter)
+  const encounterRef = useRef(encounter)
+  const showPopupRef = useRef(showPopup)
+  const bagWindowRef = useRef(bagWindow)
+
+  useEffect(()=> {
+    encounterRef.current = encounter;
+    showPopupRef.current = showPopup
+    bagWindowRef.current = bagWindow
+  }, [encounter, showPopup, bagWindow])
 
   const capture = () => {
+    if(!encounterRef.current || showPopupRef.current || bagWindowRef.current)return;
     if(hasItem(currentPokeball)){
       dispatch(REMOVE_ITEM(currentPokeball))
 
