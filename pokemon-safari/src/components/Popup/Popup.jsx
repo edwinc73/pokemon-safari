@@ -29,10 +29,11 @@ export default function Popup(props){
 
   return(
     <div className='popup-container d-flex justify-content-center align-items-center'>
-      <div className="popup d-flex justify-content-center align-items-center text-bg-light">
+      <div className="popup d-flex justify-content-around align-items-center text-bg-light">
         <h2>
           You got a {item.name && item.name[0].toUpperCase() + item.name.slice(1)}.
         </h2>
+        <span className='key'></span>
       </div>
     </div>
   )

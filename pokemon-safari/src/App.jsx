@@ -134,7 +134,7 @@ function App() {
   <div className="game d-flex">
     <img src="/bg-map.png" id="game-backdrop"alt="" />
     <div className="game-window p-5" style={backgroundStyle}>
-      <img src="/game-map.png" alt="" />
+      <img id="game-map" src="/game-map.png" alt="safari game map" />
       <Items />
     </div>
       <Player direction = {position.direction} />

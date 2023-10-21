@@ -11,7 +11,7 @@
   right: 50%;
   transform: translateX(-50%);
   overflow: hidden;
-  border-radius: 4px;
+  border-radius: 10px;
 
   .show{
     opacity: 1;
@@ -22,14 +22,74 @@
 .popup{
   opacity: 0;
   transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-  width: 400px;
+  width: 500px;
   height: 90px;
+  padding: 0 30px;
   border: $game-container-border;
-  border-radius: $game-container-radius;
-  gap: 4px;
+  border-radius: 10px;
 
   h2{
     padding: 0;
-    margin: 0;
+    margin: 4px 0 0;
+  }
+
+}
+
+.key{
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  background-color: #f0f0f0;
+  border: 1px solid #d4d4d4;
+  border-radius: 5px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+  margin: 5px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.3s, transform 0.1s;
+  position: relative;
+  overflow: hidden;
+  color: black;
+
+}
+
+.key::after{
+  content: "z";
+  position: absolute;
+  text-align: center;
+  line-height: 41px;
+  font-size: 30px;
+  font-weight: bold;
+  color: $font-color;
+  left: 3px;
+  top: 0;
+  width: 41px;
+  height: 41px;
+  background-color: #f5f5f5;
+  border: 1px solid rgba($color: #fff, $alpha: 0.1);
+  border-radius: 4px;
+  box-shadow: 3px 3px 3px 1px rgba($color: #000000, $alpha: 0.12),
+  -6px -6px 3px 0px rgba($color: #000000, $alpha: 0.04), inset 3px 3px 6px rgba($color: #000, $alpha: 0.05), inset -3px -3px 6px rgba($color: #000, $alpha: 0.05);
+  animation: 1s infinite animateKeyPress;
+  animation-delay: 0.5s;
+}
+
+@keyframes animateKeyPress{
+  0%, 100% {
+    transform: translateY(0);
+    box-shadow:
+      3px 3px 3px 1px rgba(0, 0, 0, 0.12),
+      -6px -6px 3px 0px rgba(0, 0, 0, 0.04),
+      inset 3px 3px 6px rgba(0, 0, 0, 0.05),
+      inset -3px -3px 6px rgba(0, 0, 0, 0.05);
+  }
+
+  50% {
+    transform: translateY(1px);
+    box-shadow:
+      1px 1px 1px 1px rgba(0, 0, 0, 0.12),
+      -2px -2px 1px 0px rgba(0, 0, 0, 0.04),
+      inset 1px 1px 3px rgba(0, 0, 0, 0.05),
+      inset -1px -1px 3px rgba(0, 0, 0, 0.05);
   }
 }

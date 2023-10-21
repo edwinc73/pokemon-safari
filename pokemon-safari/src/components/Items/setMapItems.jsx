@@ -98,12 +98,13 @@ const Items = () => {
       position: "absolute",
       width: "40px",
       height: "40px",
+      objectFit: "contain",
       top: `${(item.y * config.squareValue)}px`,
       left: `${(item.x * config.squareValue)}px`
     }
 
     return(
-      <img key={item.id} style={imageStyle} alt={`item-${item.id}`} src="./pokeballs/pokeball/idle.png" />
+      <img className="map-item" key={item.id} style={imageStyle} alt={`item-${item.id}`} src="./pokeballs/pokeball/idle.png" />
     )
   })
 
