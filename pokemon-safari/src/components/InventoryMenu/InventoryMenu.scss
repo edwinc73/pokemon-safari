@@ -1,0 +1,44 @@
+@import "../../App.scss";
+
+.inventory-menu{
+  position: relative;
+  width: 300px;
+  height: 610px;
+  border-radius: $game-container-radius;
+  padding: 25px;
+  margin-top: calc($game-container-size - 610px - $game-container-margin);
+
+  .inventory-container{
+    font-family: 'Pixelify Sans', sans-serif;
+    border: $game-container-border;
+    border-radius: 10px;
+    min-width: 250px;
+    min-height: 50px;
+    font-size: 25px;
+    overflow: hidden;
+    height: 100%;
+    padding: 0;
+  }
+}
+
+.pokeball{
+  margin-bottom: 10px;
+  width: 210px;
+
+  .pokeball-image{
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+  }
+
+  .item-name{
+    text-transform: capitalize;
+    line-height: 30px;
+  }
+
+  p{
+    font-size: 22px;
+    margin: 0;
+    margin-top: 3px;
+  }
+}

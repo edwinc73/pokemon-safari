@@ -10,13 +10,14 @@ import {Player} from "../src/components/Player/Player"
 import Popup from './components/Popup/Popup';
 import useMovement from "./customHook/useMovement"
 import EncounterScreen from "./components/Encounter/EncounterScreen"
+import InventoryMenu from "./components/InventoryMenu/InventoryMenu"
 import { getEncounteredPokemon, randomPokemon, pokemonName, isShiny, setPokemonLevel } from './js/encounter';
 
 import Loading from "../src/components/Loading/Loading"
 
 //      redux
 import store from "./store/index"
-import {SET_LOADING, SET_COLLISION, SET_GRASS, SET_POSITION, SET_ENCOUNTER, ADD_POKEMON, NEW_POKEMON, ADD_ITEM, REMOVE_ITEM, FETCH_ALL_POKEMON_DATA, CURRENT_POKEBALL, CURRENT_BAIT, SET_BAGWINDOW, SYSTEM_MESSAGE, SET_SCORE, SET_MAP_ITEMS_LIST, FOUND_MAP_ITEM, SET_LATEST_MAP_ITEM, SET_SHOW_POPUP} from "./actions/actionsCreator"
+import {SET_LOADING, SET_COLLISION, SET_GRASS, SET_ENCOUNTER, NEW_POKEMON, ADD_ITEM, FETCH_ALL_POKEMON_DATA, CURRENT_POKEBALL, CURRENT_BAIT, SET_BAGWINDOW, SYSTEM_MESSAGE, SET_SCORE, SET_MAP_ITEMS_LIST, FOUND_MAP_ITEM, SET_LATEST_MAP_ITEM, SET_SHOW_POPUP} from "./actions/actionsCreator"
 
 //      data
 import { collision } from "../data/collision-map"
@@ -40,11 +41,6 @@ function App() {
   const pokemonList = useSelector(selectPokemonList)
   const mapItemList = useSelector(selectMapItemList)
   const latestMapItem = useSelector(selectLatestMapItem)
-  const showPopup = useSelector(selectShowPopUp)
-  // const pokemonEncounter = useSelector(selectPokemonEncounter)
-  // const loading = useSelector(selectLoading)
-  // const pokemon = useSelector(selectPokemonEncounter)
-
 
   useEffect(()=>{
     //      initialize map
@@ -145,6 +141,7 @@ function App() {
     <>
       <div className="background-color d-flex">
         <div className="game-container">
+          <InventoryMenu />
           {safariMap}
           <EncounterScreen />
           <Loading />

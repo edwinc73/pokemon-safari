@@ -8,40 +8,49 @@ const initialState = {
       name: "pokeball",
       quantity: 10,
       value: 0,
-      rarity: 1
+      rarity: 1,
+      src: "/pokeballs/pokeball/idle.png"
     },{
       name: "greatball",
       quantity: 1,
       value: 20,
-      rarity: 0.4
+      rarity: 0.4,
+      src: "/pokeballs/greatball/idle.png"
+
     },{
       name: "ultraball",
       quantity: 0,
       value: 60,
-      rarity: 0.2
+      rarity: 0.2,
+      src: "/pokeballs/ultraball/idle.png"
+
     },{
       name: "masterball",
       quantity: 0,
       value: 4000,
-      rarity: 0.05
+      rarity: 0.05,
+      src: "/pokeballs/masterball/idle.png"
     }
     ],
     baits:[{
       name: "berry",
       quantity : 5,
       value: 5,
-      rarity: 1
+      rarity: 1,
+      src: "/berry/RazzBerry.png"
+
     },{
       name: "banana",
       quantity : 0,
       value: 20,
-      rarity: 0.2
+      rarity: 0.2,
+      src: "/berry/NanabBerry.png"
     }
     ],
     etc:[
-      {name: "rare candy" , quantity: 0, value: 30, rarity: 0.4},
-      {name: "nugget" , quantity: 0, value: 60, rarity: 0.2},
-      {name: "admant crystal" , quantity: 0, value: 120, rarity: 0.1}
+      {name: "rare candy" , quantity: 0, value: 30, rarity: 0.4, src: "/rare_candy.png"},
+      {name: "nugget" , quantity: 0, value: 60, rarity: 0.2, src: "/nugget.png"},
+      {name: "crystal" , quantity: 0, value: 120, rarity: 0.1, src: "/adamant_orb.png"}
     ],
   },
   currentPokeball:{name: 'pokeball', quantity: 10, value: 0, rarity: 1},
